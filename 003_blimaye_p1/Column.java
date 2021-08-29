@@ -1,79 +1,115 @@
 // TO DO: add your implementation and JavaDocs.
 
+/**
+ *A class that represents a column of the PowerConnectFour game, where each column holds a certain Token of color.
+ *@author Brian Limaye
+ *@param <T> A generic type representing the varying type of each Token.
+ */
 public class Column<T> {
 	//default initial capacity / minimum capacity
+	
+	/**
+	 *The default capacity for a Column.
+	 */
 	private static final int DEFAULT_CAPACITY = 2;
 	
 	//underlying array for storage -- you MUST use this for credit!
 	//Do NOT change the name or type
+	
+	/**
+	 *A collection of generic objects, used to resemble a Column.
+	 */
 	private T[] data;
 
 	// ADD MORE PRIVATE MEMBERS HERE IF NEEDED!
 
+	/**
+	 *The number of occupied cells of a given Column.
+	 */
 	private int currentSize;
+
+	/**
+	 *The supposed maximum amount of cells that can be occupied by a given Column.
+	 */
 	private int capacity;
 
-
+	/**
+	 *Resizes a column, if its capacity is reached.
+	 *@param mult The multiplier of resizing, with any value > 1 growing the column. Any value < 1 will shrink the column.
+	 */
 	@SuppressWarnings("unchecked")
 	private void resizeArray(double mult) {
 
 		T[] prev = data;
-		T[] newArr = (T[]) new Object[(int) (capacity * mult)];
-		int len = (int) Math.min(capacity * mult, capacity);
+		//New array, being either shrunk or augmented from the original.
+		T[] newArr = (T[]) new Object[(int) (capacity * mult)];  
+		int len = (int) Math.min(capacity * mult, capacity);     //The new and old capacities and compared, in order to obtain the smallest for copying.
 
+		//Elements from the old column are copied to the new.
 		for(int i = 0; i < len; i++) {
 
 			newArr[i] = prev[i];
 		}
 
 		capacity *= mult;
-		this.data = newArr;
+		this.data = newArr; //New column is set, following the resizing.
 	}
 		
+	/**
+	 *Creates a new instance of a Column, with an initial capacity of DEFAULT_CAPACITY.
+	 */
 	@SuppressWarnings("unchecked")
 	public Column() {
-		// Constructor
+
+		//Creates a new empty storage array for the given column, with a default capacity of DEFAULT_CAPACITY.
 		this.data = (T[]) new Object[DEFAULT_CAPACITY];
 		this.currentSize = 0;
 		this.capacity = DEFAULT_CAPACITY;
-		// Initial capacity of the storage should be DEFAULT_CAPACITY
-		// Hint: Can't remember how to make an array of generic Ts? It's in the textbook...
-		
 	}
 
+	/**
+	 *Creates a new instance of a Column, with an initial capacity of initialCapacity.
+	 *@param initialCapacity The initial capacity of the current column.
+	 */
 	@SuppressWarnings("unchecked")
 	public Column(int initialCapacity) {
-		// Constructor
 
-		// Initial capacity of the storage should be initialCapacity
-
+		//Check for an invalid initialCapcity.
 		if(initialCapacity < 1) {
 			throw new IllegalArgumentException("Capacity must be positive.");
 		}
+		
+		//Creates a new empty storage array for the given column, with a default capacity of initialCapacity.
 		this.data = (T[]) new Object[initialCapacity];
 		this.currentSize = 0;
 		this.capacity = initialCapacity;
-		// Throw IllegalArgumentException if initialCapacity is smaller than 1
-		// Use this _exact_ error message for the exception
-		// (quotes are not part of the message):
-		//    "Capacity must be positive."
-		
 	}
 	
-
+	/**
+	 *Gets the current size of a given column.
+	 *@return Returns the number of occupied cells in a given column.
+	 */
 	public int size() {	
-		// Report the current number of elements
 		return currentSize;
 		// O(1)
 	}  
 		
+	/**
+	 *Gets the current capacity of a given column.
+	 *@return Returns the maximum capacity, in which a given column can hold.
+	 */
 	public int capacity() { 
-		// Report max number of elements before expansion
 		return capacity;
 		// O(1)
 	}
 
 
+	/**
+	 *Attempts to set a cell of a column at a given index, to a new value.
+	 *@param index The position of a column to be set, if possible.
+	 *@param value A generic value to replace the previous value, if possible.
+	 *@return Returns the previous value, following the modification, if possible.
+	 */
 	public T set(int index, T value) {
 		// Change the item at the given index to be the given value.
 		// Return the old item at that index.
@@ -81,20 +117,17 @@ public class Column<T> {
 
 		T oldValue;
 
-		if((index < 0) || (index > currentSize)) {
+		//Checks for an invalid index.
+		if((index < 0) || (index >= currentSize)) {
 			throw new IndexOutOfBoundsException("Index: " + index + " out of bounds!");
 		}
 
+		//Obtains the old value, prior to setting the new value.
 		oldValue = data[index];
 		data[index] = value;
 
 		return oldValue;
 		// O(1)
-		
-		// For an invalid index, throw an IndexOutOfBoundsException
-		// Use this code to produce the correct error message for
-		// the exception (do not use a different message):
-		//	  "Index: " + index + " out of bounds!"		
 	}
 
 	public T get(int index) {
@@ -112,19 +145,30 @@ public class Column<T> {
 		// for invalid indicies.				
 	}
 
+	/**
+	 *Attempts to append a value at the end of a given Column.
+	 *@param value A generic value to be appended at the end of a given Column, if possible.
+	 */
 	@SuppressWarnings("unchecked")
 	public void add(T value) {
 		// Append an element to the end of the storage.		
 		// Double the capacity if no space available.
 
+		//Doubles the current storage array, if its capacity is reached.
 		if(currentSize >= capacity) {
 			resizeArray(2);
 		}
 
+		//Appends the value to the column, while incrementing the currentSize.
 		data[currentSize++] = value;
 		// Amortized O(1)	
 	} 
 
+	/**
+	 *Attempts to insert a value into a given Column, at a particular index.
+	 *@param index The index of insertion in a given Column.
+	 *@param value The generic value to be inserted, if possible.
+	 */
 	@SuppressWarnings("unchecked")
 	public void add(int index, T value) {
 		// Insert the given value at the given index. Shift elements if needed,  
@@ -134,34 +178,39 @@ public class Column<T> {
 		// For the exception, use the same exception and message as set() and
 		// get()... however remember that the condition of the exception is
 		// different (different indexes are invalid).
-		boolean hasReached = false;
-		T prev = null;
+		boolean hasReached = false; //A flag to indicate once the index is reached.
+		T prev = null; 
 		T curr = null;
 
+		//A check for an invalid index input.
 		if((index < 0) || (index > currentSize)) {
 			throw new IndexOutOfBoundsException("Index: " + index + " out of bounds!");
 		}
 
+		//A check for a possible augmentation of the storage array, this occurs once the capacity is met.
 		if(currentSize >= capacity) {
 			resizeArray(2);
 		}
 
 		for(int i = 0; i < currentSize; i++) {
 
+			//Once the index is found.
 			if(i == index) {
 				hasReached = true;
 				++currentSize;
-				prev = data[i];
-				data[i] = value;
+				prev = data[i]; 	 //The previous value is saved, to be set at the next index.
+				data[i] = value;	 //The new value is set.
 			}
 
+			//Every other successive index.
 			else if(hasReached) {
-				curr = data[i];
-				data[i] = prev;
+				curr = data[i]; 	 //Saves the previous value, prior to shifting.
+				data[i] = prev;		 //Shifts the value from the previous index.
 				prev = curr;
 			}
 		}
 
+		//If the value needs to be appended, rather than inserted.
 		if(!hasReached) {
 
 			add(value);
@@ -170,6 +219,10 @@ public class Column<T> {
 	} 
 	
 	
+	/**
+	 *Attempts to delete a value from a given Column, at a particular index.
+	 *@param index The index of deletion from a given Column.
+	 */
 	@SuppressWarnings("unchecked")
 	public T delete(int index) {
 		// Remove and return the element at the given index. Shift elements
@@ -178,26 +231,33 @@ public class Column<T> {
 		
 		// Halve capacity of the storage if the number of elements falls
 		// below 1/3 of the capacity. Capacity should NOT go below DEFAULT_CAPACITY.
-		boolean hasReached = false;
+		boolean hasReached = false; 	//Flag to indicate once the index is reached.
 		T deleted = null;
 
+		//A check for an invalid index.
 		if((index < 0) || (index > currentSize)) {
 			throw new IndexOutOfBoundsException("Index: " + index + " out of bounds!");
 		}
 
 		for(int i = 0; i < currentSize; i++) {
 
+			//Once the index is met, the previous value is stored.
 			if(i == index) {
 				hasReached = true;
 				deleted = data[i];
+				data[i] = null;
 			}
 
 			else if(hasReached) {
 
+				//Simple swap, in order to shift the elements, following the deleted element.
+				T temp = data[i - 1];
 				data[i - 1] = data[i];
+				data[i] = temp;
 			}
 		}
 
+		//Shrinks the capacity, if the currentSize falls below 1/3. However, any capacity greater than DEFAULT_CAPACITY is preserved.
 		if((--currentSize <= capacity / 3) && (capacity / 2 > DEFAULT_CAPACITY)) {
 			resizeArray(0.5);
 		}
@@ -211,6 +271,10 @@ public class Column<T> {
 	//*******		Remember to add JavaDoc			 *******
 	//******************************************************
 	
+	/**
+	 *Gets a human interpretted representation of the Column.
+	 *@return Returns the human interpretted data for a particular Column. This includes the current size and capacity.
+	 */
 	public String toString() {
 		//This method is provided for debugging purposes
 		//(use/modify as much as you'd like), it just prints
@@ -224,6 +288,10 @@ public class Column<T> {
 		
 	}
 	
+	/**
+	 *Main method to briefly test the functionality of the Column implementation.
+	 *@param args Command-line arguments, primarily used for testing purposes at run-time.
+	 */
 	public static void main(String args[]){
 		//These are _sample_ tests. If you're seeing all the "yays" that's
 		//an excellent first step! But it might not mean your code is 100%
@@ -277,8 +345,4 @@ public class Column<T> {
 			System.out.println("Yay 5");
 		}		
 	}
-	
-
-	
-
 }
