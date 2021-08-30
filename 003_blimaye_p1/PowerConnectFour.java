@@ -135,7 +135,7 @@ public class PowerConnectFour {
 			}
 		}
 
-		//If the maximum number of rows exceeds MIN_ROWS, an extra row is displayed. If not, MIN_ROWS is returned.
+		//If the maximum number of rows exceeds MIN_ROWS, an extra row is displayed. If not, MIN_ROWS is returned..
 		return (max >= MIN_ROWS) ? max + 1 : MIN_ROWS;
 		// O(1)	
 	}

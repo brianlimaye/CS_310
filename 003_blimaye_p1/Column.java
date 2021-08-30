@@ -149,7 +149,7 @@ public class Column<T> {
 
 	/**
 	 *Attempts to append a value at the end of a given Column.
-	 *@param value A generic value to be appended at the end of a given Column, if possible.
+	 *@param value A generic value to be appended at the end of a given Column, if possible..
 	 */
 	@SuppressWarnings("unchecked")
 	public void add(T value) {
