@@ -134,6 +134,8 @@ public class Column<T> {
 		// Return the item at the given index
 		
 		if((index < 0) || (index >= capacity)) {
+			//System.out.println("Capacity was initially: " + capacity);
+			//System.out.println("Current size was: " + currentSize);
 			throw new IndexOutOfBoundsException("Index: " + index + " out of bounds!");
 		}
 
@@ -155,7 +157,7 @@ public class Column<T> {
 		// Double the capacity if no space available.
 
 		//Doubles the current storage array, if its capacity is reached.
-		if(currentSize >= capacity) {
+		if(currentSize + 1 > capacity) {
 			resizeArray(2);
 		}
 
@@ -188,7 +190,7 @@ public class Column<T> {
 		}
 
 		//A check for a possible augmentation of the storage array, this occurs once the capacity is met.
-		if(currentSize >= capacity) {
+		if(currentSize + 1 > capacity) {
 			resizeArray(2);
 		}
 
@@ -323,7 +325,7 @@ public class Column<T> {
 		msg.add(3,"!");
 		
 		//checking
-		if (msg.get(0).equals("hello") && msg.set(1,"beautiful").equals("new") 
+		if (msg.get(0).equals("hello") && msg.set(1,"beautiful").equals("new")
 			&& msg.size() == 4 && msg.capacity() == 4){
 			System.out.println("Yay 3");
 		}
@@ -343,6 +345,53 @@ public class Column<T> {
 		if (nums.delete(0) == -10 && nums.delete(1) == 2 && nums.delete(2) == 100
 			&& nums.size() == 2  && nums.capacity() == 4) {
 			System.out.println("Yay 5");
-		}		
+		}
+
+		//Misc Tests
+		Column<Integer> nums2 = new Column<>(6);
+
+		try {
+
+			nums2.set(0, null);
+		}
+		catch(IndexOutOfBoundsException iobe) {
+
+			System.out.println("Yay 6");
+		}
+
+		nums2.add(1);
+		nums2.add(2);
+		nums2.add(3);
+		nums2.add(4);
+		nums2.add(5);
+		nums2.add(6);
+		nums2.add(7);
+
+		if(nums2.capacity() == 12) {
+
+			System.out.println("Yay 7");
+		}
+
+		nums2.add(0, 11);
+		nums2.add(3, 129);
+
+		assert(nums2.get(0) == 11);
+		assert(nums2.get(3) == 129);
+
+		nums2.delete(0);
+		nums2.delete(4);
+		nums2.delete(5);
+		nums2.delete(2);
+		nums2.delete(1);
+		System.out.println(nums2.toString());
+
+		try {
+
+			nums2.add(100, 4);
+		}
+		catch(IndexOutOfBoundsException iobe) {
+
+			System.out.println("Yay 8");
+		}
 	}
 }

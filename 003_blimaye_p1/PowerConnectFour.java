@@ -1,5 +1,7 @@
 // TO DO: add your implementation and JavaDocs
 
+import java.util.Scanner;
+
 /**
  *This class represents and controls the functionality of the various facets of the PowerConnectFour game.
  *This includes all the various moves, the current player, the collection of columns, and the display sizes.
@@ -70,7 +72,6 @@ public class PowerConnectFour {
 			grid[i] = (Column<Token>) new Column(MIN_ROWS);
 		}
 	}
-	
 		
 	/**
 	 *Initializes a new PowerConnectFour instance, starting the game.
@@ -175,10 +176,15 @@ public class PowerConnectFour {
 		}
 
 		//Last row should be empty entirely.
-		if(row == maxRows - 1) {
+		//Returns empty when a column does not contain any token, while having a smaller capacity than being accessed.
+		if((row == maxRows - 1) || (row >= grid[col].capacity())) {
 			return null;
 		}
 
+		//System.out.println("Col was: " + col);
+		//System.out.println("Row was: " + row);
+		//System.out.println("Capacity is: " + grid[col].capacity());
+		//System.out.println("Max row is: " + (maxRows - 1));
 		return grid[col].get(row);
 		// O(1)		
 	}
@@ -355,12 +361,18 @@ public class PowerConnectFour {
 		// Return 0 if out of bounds
 
 		int consecutives = 0;
+		int maxRow = sizeRow();
 
 		//Check for any invalid Column and/or row indicies.
-		if((col < 0) || (col >= NUM_COLS) || (row < 0) || (row >= sizeRow())) {
+		if((col < 0) || (col >= NUM_COLS) || (row < 0) || (row >= sizeRow() - 1)) {
 			return 0;
 		}
 
+		if((row >= maxRow - 1) || (row >= grid[col].capacity())) {
+
+			return 0;
+		}
+		
 		//A check to ensure the token at the Column and row belongs to the current player.
 		if(grid[col].get(row) != player) {
 			return 0;
@@ -371,13 +383,16 @@ public class PowerConnectFour {
 		for(int i = -3; i < 4; i++) {
 
 			//Checks to see if the shifted column is in bounds. If so, its contents are compared to the current player's token.
-			if((col + i >= 0) && (col + i < NUM_COLS) && (grid[col + i].get(row) == player)) {
+			if((col + i >= 0) && (col + i < NUM_COLS) && (row < grid[col + i].capacity()) && (grid[col + i].get(row) == player)) {
 
 				++consecutives;
 				continue;
 			}
 			else if(i > 0) {   //Exits out of the loop once a non-player token is reached, following i = 0.
 				break;
+			}
+			else {
+				consecutives = 0;
 			}
 		}
 
@@ -402,9 +417,15 @@ public class PowerConnectFour {
 		// Return 0 if out of bounds
 
 		int consecutives = 0;
+		int maxRow = sizeRow();
 
 		//Check for any invalid Column and/or row indicies.
-		if((col < 0) || (col >= NUM_COLS) || (row < 0) || (row >= sizeRow())) {
+		if((col < 0) || (col >= NUM_COLS) || (row < 0) || (row >= sizeRow() - 1)) {
+			return 0;
+		}
+
+		if((row >= maxRow - 1) || (row >= grid[col].capacity())) {
+
 			return 0;
 		}
 
@@ -417,13 +438,16 @@ public class PowerConnectFour {
 		for(int i = -3; i < 4; i++) {
 
 			//Checks to see if the shifted rows are in bounds. If so, its contents are compared to the current player's token.
-			if((row + i >= 0) && (row + i < sizeRow() - 1) && (grid[col].get(row + i) == player)) {
+			if((row + i >= 0) && (row + i < sizeRow() - 1) && (row + i < grid[col].capacity()) && (grid[col].get(row + i) == player)) {
 
 				++consecutives;
 				continue;
 			}
 			else if(i > 0) {  	//Exits out of the loop once a non-player token is reached, following i = 0;
 				break;
+			}
+			else {
+				consecutives = 0;
 			}
 		}
 
@@ -450,7 +474,11 @@ public class PowerConnectFour {
 		int maxRow = sizeRow();
 
 		//Check for any invalid Column and/or row indicies.
-		if((col < 0) || (col >= NUM_COLS) || (row < 0) || (row >= maxRow)) {
+		if((col < 0) || (col >= NUM_COLS) || (row < 0) || (row >= maxRow - 1)) {
+			return 0;
+		}
+
+		if(row >= grid[col].capacity()) {
 			return 0;
 		}
 
@@ -463,7 +491,8 @@ public class PowerConnectFour {
 		for(int i = -3; i < 4 ; i++) {
 
 			//Checks to see if the main diagonal tokens are in bounds. If so, its contents are compared to the current player's token.
-			if((row - i >= 0) && (row - i < maxRow - 1) && (col + i >= 0) && (col + i < NUM_COLS)
+			//System.out.println("Col: " + col + " Row: " + row);
+			if((row - i >= 0) && (row - i < maxRow - 1) && (col + i >= 0) && (col + i < NUM_COLS) && (row - i < grid[col + i].capacity())
 		      && (grid[col + i].get(row - i) == player)) {
 
 				++consecutives;
@@ -471,6 +500,9 @@ public class PowerConnectFour {
 			}
 			else if(i > 0) {  		//Exits out of the loop once a non-player token is reached, following i = 0;
 				break;
+			}
+			else {
+				consecutives = 0;
 			}
 		}
 		return consecutives;
@@ -497,7 +529,11 @@ public class PowerConnectFour {
 		int maxRow = sizeRow();
 
 		//Check for any invalid Column and/or row indicies.
-		if((col < 0) || (col >= NUM_COLS) || (row < 0) || (row >= maxRow)) {
+		if((col < 0) || (col >= NUM_COLS) || (row < 0) || (row >= maxRow - 1)) {
+			return 0;
+		}
+
+		if(row >= grid[col].capacity()) {
 			return 0;
 		}
 
@@ -510,7 +546,7 @@ public class PowerConnectFour {
 		for(int i = -3; i < 4 ; i++) {
 
 			//Checks to see if the minor diagonal tokens are in bounds. If so, its contents are compared to the current player's token.
-			if((row + i >= 0) && (row + i < maxRow - 1) && (col + i >= 0) && (col + i < NUM_COLS)
+			if((row + i >= 0) && (row + i < maxRow - 1) && (col + i >= 0) && (col + i < NUM_COLS) && (row + i < grid[col + i].capacity())
 		      && (grid[col + i].get(row + i) == player)) {
 
 				++consecutives;
@@ -518,6 +554,9 @@ public class PowerConnectFour {
 			}
 			else if(i > 0) {   		//Exits out of the loop once a non-player token is reached, following i = 0;	
 				break;
+			}
+			else {
+				consecutives = 0;
 			}
 		}
 		return consecutives;  
@@ -568,7 +607,7 @@ public class PowerConnectFour {
 	 */
 
 	public static void main(String[] args) {
-	
+
 		// init with an empty grid
 		PowerConnectFour myGame = new PowerConnectFour();	
 
