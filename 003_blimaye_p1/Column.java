@@ -117,6 +117,11 @@ public class Column<T> {
 
 		T oldValue;
 
+		//Check for a null input value.
+		if(value == null) {
+			return null;
+		}
+
 		//Checks for an invalid index.
 		if((index < 0) || (index >= currentSize)) {
 			throw new IndexOutOfBoundsException("Index: " + index + " out of bounds!");
@@ -133,14 +138,11 @@ public class Column<T> {
 	public T get(int index) {
 		// Return the item at the given index
 		
-		if((index < 0) || (index >= capacity)) {
-			//System.out.println("Capacity was initially: " + capacity);
-			//System.out.println("Current size was: " + currentSize);
+		if((index < 0) || (index > capacity)) {
 			throw new IndexOutOfBoundsException("Index: " + index + " out of bounds!");
 		}
 
 		return data[index];
-		
 		// O(1)
 		
 		// Use the exception (and error message) described in set()
@@ -155,6 +157,11 @@ public class Column<T> {
 	public void add(T value) {
 		// Append an element to the end of the storage.		
 		// Double the capacity if no space available.
+
+		//Check for a null value
+		if(value == null) {
+			return;
+		}
 
 		//Doubles the current storage array, if its capacity is reached.
 		if(currentSize + 1 > capacity) {
@@ -183,6 +190,11 @@ public class Column<T> {
 		boolean hasReached = false; //A flag to indicate once the index is reached.
 		T prev = null; 
 		T curr = null;
+
+		//A check for a null value.
+		if(value == null) {
+			return;
+		}
 
 		//A check for an invalid index input.
 		if((index < 0) || (index > currentSize)) {
@@ -237,7 +249,7 @@ public class Column<T> {
 		T deleted = null;
 
 		//A check for an invalid index.
-		if((index < 0) || (index > currentSize)) {
+		if((index < 0) || (index >= currentSize)) {
 			throw new IndexOutOfBoundsException("Index: " + index + " out of bounds!");
 		}
 
@@ -321,6 +333,7 @@ public class Column<T> {
 		//insert some strings
 		msg.add(0,"world");
 		msg.add(0,"hello");
+		System.out.println(msg.toString());
 		msg.add(1,"new");
 		msg.add(3,"!");
 		
@@ -349,15 +362,6 @@ public class Column<T> {
 
 		//Misc Tests
 		Column<Integer> nums2 = new Column<>(6);
-
-		try {
-
-			nums2.set(0, null);
-		}
-		catch(IndexOutOfBoundsException iobe) {
-
-			System.out.println("Yay 6");
-		}
 
 		nums2.add(1);
 		nums2.add(2);

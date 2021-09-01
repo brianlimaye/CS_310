@@ -121,7 +121,6 @@ public class PowerConnectFour {
 		//	  - if the number of pieces of any column reaches or grows beyond MIN_ROWS,
 		//		make sure the display covers the "tallest" column and leaves one "margin"
 		//		row at the top of the grid.
-
 		int max = 0;
 
 		for(int i = 0; i < NUM_COLS; i++) {
@@ -176,15 +175,11 @@ public class PowerConnectFour {
 		}
 
 		//Last row should be empty entirely.
-		//Returns empty when a column does not contain any token, while having a smaller capacity than being accessed.
+		//Returns empty when a column does not contain any token, or having a smaller capacity than being accessed.
 		if((row == maxRows - 1) || (row >= grid[col].capacity())) {
 			return null;
 		}
 
-		//System.out.println("Col was: " + col);
-		//System.out.println("Row was: " + row);
-		//System.out.println("Capacity is: " + grid[col].capacity());
-		//System.out.println("Max row is: " + (maxRows - 1));
 		return grid[col].get(row);
 		// O(1)		
 	}
@@ -270,8 +265,7 @@ public class PowerConnectFour {
 		}
 
 		try {
-
-			//Attempts to add the current player's token.
+			//Attempts to add the current player's token, while antipating a thrown Exception, if not possible.
 			grid[col].add(row, currentPlayer());
 		}
 		catch(IndexOutOfBoundsException iobe) {
@@ -361,14 +355,15 @@ public class PowerConnectFour {
 		// Return 0 if out of bounds
 
 		int consecutives = 0;
-		int maxRow = sizeRow();
+		int max = 0;
+		int maxRow = sizeRow() - 1;
 
 		//Check for any invalid Column and/or row indicies.
-		if((col < 0) || (col >= NUM_COLS) || (row < 0) || (row >= sizeRow() - 1)) {
+		if((col < 0) || (col >= NUM_COLS) || (row < 0) || (row >= maxRow)) {
 			return 0;
 		}
 
-		if((row >= maxRow - 1) || (row >= grid[col].capacity())) {
+		if(row >= grid[col].capacity()) {
 
 			return 0;
 		}
@@ -378,21 +373,20 @@ public class PowerConnectFour {
 			return 0;
 		}
 
-		
-		//A constant loop that checks the left and right three Columns to the current Column and row for contiguous tokens.
-		for(int i = -3; i < 4; i++) {
+		//A constant loop that checks all Columns, including the current Column and row, for contiguous tokens.
+		for(int i = 0; i < NUM_COLS; i++) {
 
 			//Checks to see if the shifted column is in bounds. If so, its contents are compared to the current player's token.
-			if((col + i >= 0) && (col + i < NUM_COLS) && (row < grid[col + i].capacity()) && (grid[col + i].get(row) == player)) {
+			if((row < grid[i].capacity()) && (grid[i].get(row) == player)) {
 
 				++consecutives;
 				continue;
 			}
-			else if(i > 0) {   //Exits out of the loop once a non-player token is reached, following i = 0.
+			else if(i > col) {   //Exits out of the loop once a non-player token is reached, following i = col.
 				break;
 			}
 			else {
-				consecutives = 0;
+				consecutives = 0;  	//When a non-player token is found before the Column and row are reached, the count is reset.
 			}
 		}
 
@@ -417,14 +411,14 @@ public class PowerConnectFour {
 		// Return 0 if out of bounds
 
 		int consecutives = 0;
-		int maxRow = sizeRow();
+		int maxRow = sizeRow() - 1;
 
 		//Check for any invalid Column and/or row indicies.
-		if((col < 0) || (col >= NUM_COLS) || (row < 0) || (row >= sizeRow() - 1)) {
+		if((col < 0) || (col >= NUM_COLS) || (row < 0) || (row >= maxRow)) {
 			return 0;
 		}
 
-		if((row >= maxRow - 1) || (row >= grid[col].capacity())) {
+		if(row >= grid[col].capacity()) {
 
 			return 0;
 		}
@@ -434,28 +428,113 @@ public class PowerConnectFour {
 			return 0;
 		}
 
-		//A constant loop that checks the left and right three rows to the current Column and row for contiguous tokens.
-		for(int i = -3; i < 4; i++) {
+		//A constant loop that checks the  all rows to the current Column for contiguous tokens.
+		for(int i = 0; i < maxRow; i++) {
 
 			//Checks to see if the shifted rows are in bounds. If so, its contents are compared to the current player's token.
-			if((row + i >= 0) && (row + i < sizeRow() - 1) && (row + i < grid[col].capacity()) && (grid[col].get(row + i) == player)) {
+			if((i < grid[col].capacity()) && (grid[col].get(i) == player)) {
 
 				++consecutives;
 				continue;
 			}
-			else if(i > 0) {  	//Exits out of the loop once a non-player token is reached, following i = 0;
+			else if(i > row) {  	//Exits out of the loop once a non-player token is reached, following i = 0;
 				break;
 			}
 			else {
-				consecutives = 0;
+				consecutives = 0;   	//When a non-player token is found before the Column and row are reached, count is reset.
 			}
 		}
 
 		return consecutives;		
 		// O(N) where N is the number of tokens in the involved column		
 	}
-	
-	
+
+	private int getMajorStartIndex(int col, int row, int maxRow, char key) {
+
+		Token temp;
+
+		for(int i = 0; i < NUM_COLS; i++) {
+
+			try {
+
+				temp = grid[col - 1].get(row + 1);
+				col--;
+				row++;
+
+			}
+			catch(IndexOutOfBoundsException iobe) {
+
+				return (key == 'r') ? row : col;
+			}
+		}
+
+		return (key == 'r') ? row : col;
+	}
+
+	private int getMajorEndIndex(int col, int row, int maxRow, char key) {
+
+		Token temp;
+
+		for(int i = 0; i < NUM_COLS; i++) {
+
+			try {
+
+				temp = grid[col + 1].get(row - 1);
+				col++;
+				row--;
+
+			}
+			catch(IndexOutOfBoundsException iobe) {
+
+				return (key == 'r') ? row : col;
+			}
+		}
+
+		return (key == 'r') ? row : col;
+	}
+
+	private int getMinorStartIndex(int col, int row, int maxRow, char key) {
+
+		Token temp;
+
+		for(int i = 0; i < NUM_COLS; i++) {
+
+			try {
+
+				temp = grid[col - i].get(row - i);
+				col--;
+				row--;
+			}
+			catch(IndexOutOfBoundsException iobe) {
+
+				return (key == 'r') ? row : col;
+			}
+		}
+
+		return (key == 'r') ? row : col;
+	}
+
+	private int getMinorEndIndex(int col, int row, int maxRow, char key) {
+
+		Token temp;
+
+		for(int i = 0; i < NUM_COLS; i++) {
+
+			try {
+
+				temp = grid[col + i].get(row + i);
+				col++;
+				row++;
+			}
+			catch(IndexOutOfBoundsException iobe) {
+
+				return (key == 'r') ? row : col;
+			}
+		}
+
+		return (key == 'r') ? row : col;
+	}
+
 	/**
 	 *Counts the number of contiguous tokens of a given player at the major diagonal level, up-left and down-right, where one token is supposedly placed at the Column and row.
 	 *@param col The Column index, supposedly containing a token from the current player.
@@ -471,10 +550,19 @@ public class PowerConnectFour {
 		// location (col, row).
 
 		int consecutives = 0;
-		int maxRow = sizeRow();
+		int maxRow = sizeRow() - 1;
+
+		int startRow = getMajorStartIndex(col, row, maxRow, 'r');
+		int endRow = getMajorEndIndex(col, row, maxRow, 'r');
+
+		int startCol = getMajorStartIndex(col, row, maxRow, 'c');
+		int endCol = getMajorEndIndex(col, row, maxRow, 'c');
+
+		int currentRow = startRow;
+		int currentCol = startCol;
 
 		//Check for any invalid Column and/or row indicies.
-		if((col < 0) || (col >= NUM_COLS) || (row < 0) || (row >= maxRow - 1)) {
+		if((col < 0) || (col >= NUM_COLS) || (row < 0) || (row >= maxRow)) {
 			return 0;
 		}
 
@@ -488,23 +576,28 @@ public class PowerConnectFour {
 		}
 
 		//A constant loop that checks the left and right portion of the major diagonal to the current Column and row for contiguous tokens.
-		for(int i = -3; i < 4 ; i++) {
+		for(int i = 0; i < NUM_COLS ; i++) {
 
 			//Checks to see if the main diagonal tokens are in bounds. If so, its contents are compared to the current player's token.
-			//System.out.println("Col: " + col + " Row: " + row);
-			if((row - i >= 0) && (row - i < maxRow - 1) && (col + i >= 0) && (col + i < NUM_COLS) && (row - i < grid[col + i].capacity())
-		      && (grid[col + i].get(row - i) == player)) {
+			
+			if((i >= startCol) && (i <= endCol) && (countRow(currentCol, currentRow, player) >= 1) && (grid[currentCol].get(currentRow) == player)) {
 
 				++consecutives;
-				continue;
 			}
-			else if(i > 0) {  		//Exits out of the loop once a non-player token is reached, following i = 0;
+			
+			else if(currentCol >= col) {
+				
 				break;
 			}
 			else {
+
 				consecutives = 0;
 			}
+
+			currentCol++;
+			currentRow--;
 		}
+
 		return consecutives;
 		
 		// Return 0 if out of bounds
@@ -528,6 +621,15 @@ public class PowerConnectFour {
 		int consecutives = 0;
 		int maxRow = sizeRow();
 
+		int startRow = getMinorStartIndex(col, row, maxRow, 'r');
+		int endRow = getMinorEndIndex(col, row, maxRow, 'r');
+
+		int startCol = getMinorStartIndex(col, row, maxRow, 'c');
+		int endCol = getMinorEndIndex(col, row, maxRow, 'c');
+
+		int currentRow = startRow;
+		int currentCol = startCol;
+
 		//Check for any invalid Column and/or row indicies.
 		if((col < 0) || (col >= NUM_COLS) || (row < 0) || (row >= maxRow - 1)) {
 			return 0;
@@ -543,24 +645,25 @@ public class PowerConnectFour {
 		}
 
 		//A constant loop that checks the left and right portion of the minor diagonal to the current Column and row for contiguous tokens.
-		for(int i = -3; i < 4 ; i++) {
+		for(int i = 0; i < NUM_COLS ; i++) {
 
 			//Checks to see if the minor diagonal tokens are in bounds. If so, its contents are compared to the current player's token.
-			if((row + i >= 0) && (row + i < maxRow - 1) && (col + i >= 0) && (col + i < NUM_COLS) && (row + i < grid[col + i].capacity())
-		      && (grid[col + i].get(row + i) == player)) {
+			if((i >= startCol) && (i <= endCol) && (countRow(currentCol, currentRow, player) >= 1) && (grid[currentCol].get(currentRow) == player)) {
 
 				++consecutives;
-				continue;
 			}
-			else if(i > 0) {   		//Exits out of the loop once a non-player token is reached, following i = 0;	
+			else if(currentCol >= col) {   		//Exits out of the loop once a non-player token is reached, following i = 0;	
 				break;
 			}
 			else {
-				consecutives = 0;
+				consecutives = 0;   //When a non-player token is found before the Column and row are reached, count is reset.
 			}
+
+			currentCol++;
+			currentRow++;
 		}
-		return consecutives;  
-		
+
+		return consecutives;
 		// Return 0 if out of bounds
 		// O(1)
 	}
@@ -662,7 +765,6 @@ public class PowerConnectFour {
 		//Player R's turn
 
 		
-		System.out.println(myGame.countRow(3, 0, Token.YELLOW));
 		//counting
 		if (myGame.countRow(3,0,Token.YELLOW) == 2 && myGame.countRow(3,0,Token.RED) == 0
 			&& myGame.countCol(2,3,Token.RED) == 3 && myGame.drop(3) /*one more R*/
