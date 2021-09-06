@@ -1,5 +1,3 @@
-// TO DO: add your implementation and JavaDocs.
-
 /**
  * A class that represents a column of the PowerConnectFour game, where each column holds a certain Token of color.
  *
@@ -267,7 +265,7 @@ public class Column<T> {
         }
 
         //Shrinks the capacity, if the currentSize falls below 1/3. However, any capacity greater than DEFAULT_CAPACITY is preserved.
-        if ((--currentSize <= capacity / 3) && (capacity / 2 > DEFAULT_CAPACITY)) {
+        if ((Double.compare(--currentSize, capacity / 3.0) < 0) && (capacity / 2 >= DEFAULT_CAPACITY)) {
             resizeArray(0.5);
         }
 

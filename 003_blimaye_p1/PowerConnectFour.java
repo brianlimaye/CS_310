@@ -1,5 +1,3 @@
-// TO DO: add your implementation and JavaDocs
-
 import java.util.Scanner;
 
 /**
@@ -68,18 +66,6 @@ public class PowerConnectFour {
     }
 
     /**
-     * Initializes the columns of the display grid.
-     */
-    @SuppressWarnings("unchecked")
-    private void initColumns() {
-
-        for (int i = 0; i < NUM_COLS; i++) {
-
-            grid[i] = (Column<Token>) new Column(MIN_ROWS);
-        }
-    }
-
-    /**
      * Obtains the start index of a major diagonal, given a point(col, row) to start from. A key is also given for either a column or row.
      *
      * @param col    The original column index.
@@ -104,8 +90,8 @@ public class PowerConnectFour {
 
             } catch (IndexOutOfBoundsException iobe) {
 
-                //Returns the previous column/row, dependant on the key, prior to going out of bounds.
-                return (key == 'r') ? row : col;
+                //Exits the for loop, when a column and row pair is out of bounds.
+                break;
             }
         }
 
@@ -137,8 +123,8 @@ public class PowerConnectFour {
 
             } catch (IndexOutOfBoundsException iobe) {
 
-                //Returns the previous column/row, dependant on the key, prior to going out of bounds.
-                return (key == 'r') ? row : col;
+                //Exits the for loop, when a column and row pair is out of bounds.
+                break;
             }
         }
 
@@ -162,15 +148,15 @@ public class PowerConnectFour {
 
             try {
                 //Attempts to get the previous Token, going in the up-left direction.
-                temp = grid[col - i].get(row - i);
+                temp = grid[col - 1].get(row - 1);
 
                 //Shifts the position to the previous Token.
                 col--;
                 row--;
             } catch (IndexOutOfBoundsException iobe) {
 
-                //Returns the previous column/row, dependant on the key, prior to going out of bounds.
-                return (key == 'r') ? row : col;
+                //Exits the for loop, when a column and row pair is out of bounds.
+                break;
             }
         }
 
@@ -194,21 +180,32 @@ public class PowerConnectFour {
 
             try {
                 //Attempts to get the next Token, going in the down-right direction.
-                temp = grid[col + i].get(row + i);
+                temp = grid[col + 1].get(row + 1);
 
                 //Shifts the position to the next Token.
                 col++;
                 row++;
             } catch (IndexOutOfBoundsException iobe) {
 
-                //Returns the previous column/row, dependant on the key, prior to going out of bounds.
-                return (key == 'r') ? row : col;
+                //Exits the for loop, when a column and row pair is out of bounds.
+                break;
             }
         }
 
         return (key == 'r') ? row : col;
     }
 
+    /**
+     * Initializes the columns of the display grid.
+     */
+    @SuppressWarnings("unchecked")
+    private void initColumns() {
+
+        for (int i = 0; i < NUM_COLS; i++) {
+
+            grid[i] = (Column<Token>) new Column(MIN_ROWS);
+        }
+    }
 
     /**
      * Initializes a new PowerConnectFour instance, starting the game.
@@ -254,7 +251,7 @@ public class PowerConnectFour {
             }
         }
 
-        //If the maximum number of rows exceeds MIN_ROWS, an extra row is displayed. If not, MIN_ROWS is returned...
+        //If the maximum number of rows exceeds MIN_ROWS, an extra row is displayed on top of max. If not, MIN_ROWS is returned...
         return (max >= MIN_ROWS) ? max + 1 : MIN_ROWS;
         // O(1)
     }
@@ -445,7 +442,6 @@ public class PowerConnectFour {
 
         //Check for a row that exceeds the capacity of a given column.
         if (row >= grid[col].capacity()) {
-
             return 0;
         }
 
@@ -547,9 +543,11 @@ public class PowerConnectFour {
         int consecutives = 0;
         int maxRow = sizeRow() - 1;
 
+        //The starting/ending rows that begin the major diagonal, containing the (col, row).
         int startRow = getMajorStartIndex(col, row, maxRow, 'r');
         int endRow = getMajorEndIndex(col, row, maxRow, 'r');
 
+        //The starting/ending columns that begin the major diagonal, containing the (col, row).
         int startCol = getMajorStartIndex(col, row, maxRow, 'c');
         int endCol = getMajorEndIndex(col, row, maxRow, 'c');
 
@@ -577,13 +575,15 @@ public class PowerConnectFour {
 
             if ((i >= startCol) && (i <= endCol) && (countRow(currentCol, currentRow, player) >= 1) && (grid[currentCol].get(currentRow) == player)) {
                 ++consecutives;
-            } else if (currentCol >= col) {
+            } else if (i < startCol) {   //If a column accessed is less than the starting column of the major diagonal, it is skipped.
+                continue;
+            } else if (i >= col) {   //Once the column accessed is bigger than the starting column, the loop is exited, saving the count.
                 break;
             } else {
-                consecutives = 0;
+                consecutives = 0;   //When a non-player token is found before the column and row are reached, count is reset.
             }
 
-            currentCol++;
+            currentCol++;  
             currentRow--;
         }
 
@@ -611,9 +611,11 @@ public class PowerConnectFour {
         int consecutives = 0;
         int maxRow = sizeRow();
 
+        //The starting and ending rows that begin/end the minor diagonal, containing the (col, row).
         int startRow = getMinorStartIndex(col, row, maxRow, 'r');
         int endRow = getMinorEndIndex(col, row, maxRow, 'r');
 
+        //The starting and ending cols that begin/end the minor diagonal, containing the (col, row).
         int startCol = getMinorStartIndex(col, row, maxRow, 'c');
         int endCol = getMinorEndIndex(col, row, maxRow, 'c');
 
@@ -639,12 +641,13 @@ public class PowerConnectFour {
 
             //Checks to see if the minor diagonal tokens are in bounds. If so, its contents are compared to the current player's token.
             if ((i >= startCol) && (i <= endCol) && (countRow(currentCol, currentRow, player) >= 1) && (grid[currentCol].get(currentRow) == player)) {
-
                 ++consecutives;
-            } else if (currentCol >= col) {        //Exits out of the loop once a non-player token is reached, following i = 0;
+            } else if (i < startCol) {    //If a column accessed is less than the starting column of the major diagonal, it is skipped.
+                continue;
+            } else if (i >= col) {     //Once the column accessed is bigger than the starting column, the loop is exited, saving the count.
                 break;
             } else {
-                consecutives = 0;   //When a non-player token is found before the column and row are reached, count is reset.
+                consecutives = 0;  //When a non-player token is found before the column and row are reached, count is reset.
             }
 
             currentCol++;
@@ -741,8 +744,8 @@ public class PowerConnectFour {
                 && myGame.getColumn(2).size() == 5 && myGame.get(2, 3).getSymbol() == 'R') {
             System.out.println("Yay 5!");
         }
-        PowerConnectFourGUI.displayGrid(myGame); //uncomment to check the grid display
-        PowerConnectFourGUI.reportcurrentPlayer(myGame);
+        //PowerConnectFourGUI.displayGrid(myGame); //uncomment to check the grid display
+        //PowerConnectFourGUI.reportcurrentPlayer(myGame);
         // expected display:
         //|   || 0 || 1 || 2 || 3 || 4 || 5 || 6 |
         //| 5 || - || - || - || - || - || - || - |
@@ -756,8 +759,8 @@ public class PowerConnectFour {
 
         //counting
         if (myGame.countRow(3, 0, Token.YELLOW) == 2 && myGame.countRow(3, 0, Token.RED) == 0
-                && myGame.countCol(2, 3, Token.RED) == 3 && myGame.drop(3) /*one more R*/
-                && myGame.countMajorDiagonal(3, 1, Token.RED) == 2 /* (3,1) and (2,2) */
+                && myGame.countCol(2, 3, Token.RED) == 3 && myGame.drop(3)
+                && myGame.countMajorDiagonal(3, 1, Token.RED) == 2
                 && myGame.countMinorDiagonal(2, 0, Token.YELLOW) == 1) {
             System.out.println("Yay 6!");
         }
