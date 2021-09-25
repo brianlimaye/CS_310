@@ -60,13 +60,21 @@ public class Instruction {
      * @return Returns the human interpreted form for the current Instruction.
      */
     public String toString() {
-        String s = offset + ": " + opcode + " ";
+        final StringBuilder builder = new StringBuilder(offset);
+        builder.append(": ");
+        builder.append(opcode);
+        builder.append(" ");
         if (parameters != null) {        //Appends the parameters to the String, if present.
-            for (int param : parameters) {
-                s += param + " ";
+            for (int i=0; i < parameters.size(); i++) {
+                final Integer param = parameters.get(i);
+                builder.append(param);
+                if (i != parameters.size() - 1)
+                {
+                    builder.append(" ");
+                }
             }
         }
-        return s;
+        return builder.toString();
     }
 
     /**

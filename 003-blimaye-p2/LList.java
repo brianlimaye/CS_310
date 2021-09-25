@@ -9,17 +9,16 @@ public class LList<T> {
     /**
      * Represents the head of the given Linked List.
      */
-    private Node<T> head;
+    protected Node<T> head;
     /**
      * Represents the tail of the given Linked List.
      */
-    private Node<T> tail;
+    protected Node<T> tail;
 
     /**
      * Default constructor to initialize a new Linked List.
      */
     public LList() {
-
         this.head = null;
         this.tail = null;
     }
@@ -39,13 +38,12 @@ public class LList<T> {
      *
      * @param value A generic value to be inserted at the front.
      */
-    public void insertFirst(T value) {
+    public void insertFirst(final T value) {
 
         Node<T> first;
 
         //If head is null, a simple reassignment is sufficient.
         if (head == null) {
-
             head = new Node<>(value);
             tail = head;
             return;
@@ -62,7 +60,7 @@ public class LList<T> {
      *
      * @param newNode A generic node to be inserted at the front.
      */
-    public void insertFirst(Node<T> newNode) {
+    public void insertFirst(final Node<T> newNode) {
 
         //Check for an invalid node.
         if (newNode == null) {
@@ -71,7 +69,6 @@ public class LList<T> {
 
         //If head is null, a simple reassignment is sufficient.
         if (head == null) {
-
             head = newNode;
             tail = head;
             return;
@@ -134,7 +131,7 @@ public class LList<T> {
     public String listToString() {
 
         Node<T> curr = head;
-        StringBuilder sb = new StringBuilder();    //Used for an optimized time complexity for appending.
+        final StringBuilder sb = new StringBuilder();    //Used for an optimized time complexity for appending.
 
         while (curr != null) {
 
@@ -164,13 +161,13 @@ public class LList<T> {
             /**
              *A value.
              */
-            private int value;
+            protected int value;
 
             /**
              *One-arg constructor for creating a new SomeType instance.
              *@param value The value to be set.
              */
-            public SomeType(int value) {
+            public SomeType(final int value) {
                 this.value = value;
             }
 
@@ -187,20 +184,28 @@ public class LList<T> {
              *@param o The other object being compared.
              *@return Returns true if both are equal, false otherwise.
              */
-            public boolean equals(Object o) {
+            public boolean equals(final Object o) {
                 if (!(o instanceof SomeType)) return false;
                 return ((SomeType) o).value == value;
             }
+
+           /**
+            * @return Returns the hashcode representation of the toString() method.
+            */
+            public int hashCode()
+            {
+                return toString().hashCode();
+            }
         }
 
-        SomeType item1 = new SomeType(100);
-        SomeType item2 = new SomeType(200);
-        SomeType item3 = new SomeType(300);
-        SomeType item4 = new SomeType(400);
+        final SomeType item1 = new SomeType(100);
+        final SomeType item2 = new SomeType(200);
+        final SomeType item3 = new SomeType(300);
+        final SomeType item4 = new SomeType(400);
 
-        Node<SomeType> n5 = new Node<>(new SomeType(500));
+        final Node<SomeType> n5 = new Node<>(new SomeType(500));
 
-        LList<SomeType> list = new LList<>();
+        final LList<SomeType> list = new LList<>();
         list.insertFirst(item1);
         list.insertFirst(item2);
         list.insertFirst(item3);

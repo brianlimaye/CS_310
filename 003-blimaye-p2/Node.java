@@ -8,12 +8,12 @@ public class Node<T> {
     /**
      * The node's value.
      */
-    private T value;
+    protected T value;
 
     /**
      * The node's link to the next element in the linked list.
      */
-    private Node<T> next;
+    protected Node<T> next;
 
     /**
      * Two-argument constructor used to initialize a Node instance.
@@ -21,7 +21,7 @@ public class Node<T> {
      * @param value The value stored within that given Node.
      * @param next  The next Node, in which the current has a reference to.
      */
-    public Node(T value, Node<T> next) {
+    public Node(final T value, final Node<T> next) {
         this.value = value;
         this.next = next;
     }
@@ -31,7 +31,7 @@ public class Node<T> {
      *
      * @param value The value stored within that given Node.
      */
-    public Node(T value) {
+    public Node(final T value) {
         this.value = value;
         this.next = null;
     }
@@ -68,7 +68,7 @@ public class Node<T> {
      *
      * @param next The reference Node to be set as the "next" Node.
      */
-    public void setNext(Node<T> next) {
+    public void setNext(final Node<T> next) {
         this.next = next;
     }
 

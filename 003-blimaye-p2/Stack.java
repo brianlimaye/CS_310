@@ -9,12 +9,12 @@ public class Stack<T> {
     /**
      * A Linked List of elements used to internally store the contents of the Stack.
      */
-    private LList<T> elements;
+    protected LList<T> elements;
 
     /**
      * Stores the current size of the Stack.
      */
-    private int currentSize;
+    protected int currentSize;
 
     /**
      * Default constructor used to initialize a Stack instance.
@@ -30,7 +30,7 @@ public class Stack<T> {
      *
      * @param e The generic value to be added to the Stack.
      */
-    public void push(T e) {
+    public void push(final T e) {
 
         if (e == null) {
             return;
@@ -47,7 +47,7 @@ public class Stack<T> {
      */
     public T pop() {
 
-        Node<T> removed = elements.removeFirst();
+        final Node<T> removed = elements.removeFirst();
 
         //If there had existed an item prior to deletion, the size is decremented and the value is returned.
         if (removed != null) {
@@ -65,7 +65,7 @@ public class Stack<T> {
      */
     public T peek() {
 
-        Node<T> first = elements.getFirst();
+        final Node<T> first = elements.getFirst();
 
         //If head had not been null, there exists an item at the front.
         if (first != null) {
@@ -108,7 +108,7 @@ public class Stack<T> {
      *
      * @param args Command-line arguments primarily used for testing functionality at runtime.
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) throws Throwable {
         /**
          *Inner class representing an arbitrary type for testing.
          */
@@ -143,6 +143,14 @@ public class Stack<T> {
                 if (!(o instanceof SomeType)) return false;
                 return ((SomeType) o).value == value;
             }
+
+            /**
+             * @return Returns the hashcode representation of the toString() method.
+             */
+            public int hashCode()
+            {
+                return toString().hashCode();
+            }
         }
 
         SomeType item1 = new SomeType(100);
@@ -158,11 +166,21 @@ public class Stack<T> {
             System.out.println("Yay1");
         }
 
-        if (s.peek().toString().equals("200")) {
-            System.out.println("Yay2");
-        }
-        if (s.pop().toString().equals("200")) {
-            System.out.println("Yay3");
+        Object o = s.peek();
+        if (o != null)
+        {
+            if (o.equals("200")) {
+                System.out.println("Yay2");
+            }
+        }  
+        
+        o = s.pop();
+        if (o != null)
+        {
+            if (o.equals("200")) 
+            {
+                System.out.println("Yay3");
+            }
         }
 
         s.push(item3);

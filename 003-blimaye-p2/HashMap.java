@@ -161,7 +161,13 @@ public class HashMap<K, V> {
      * @return Returns the computed hashcode for the key.
      */
     private int getHash(K key) {
-        return key == null ? 0 : Math.abs(key.hashCode());
+        if (key == null)
+        {
+            return 0;
+        }
+        long l = key.hashCode();
+        l = Math.abs(l);
+        return (int) l;
     }
 
     /**

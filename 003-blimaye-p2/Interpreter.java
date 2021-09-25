@@ -12,28 +12,27 @@ public class Interpreter {
     /**
      * A Stack used for the entirety of Phase1, pushing/popping values on/from the Stack.
      */
-    private Stack<Integer> intStack = new Stack<>();
+    protected Stack<Integer> intStack = new Stack<>();
     /**
      * A HashMap used in Phase2 to store values internally with their respective keys for lookup/updating.
      */
-    private HashMap<Integer, Integer> indexMap = new HashMap<>();
+    protected HashMap<Integer, Integer> indexMap = new HashMap<>();
     /**
      * A HashMap also used in Phase2 to match the offset of an instruction with its corresponding Instruction, stored as a value in a Node.
      */
-    private HashMap<Integer, Node<Instruction>> instMap = new HashMap<>();
+    protected HashMap<Integer, Node<Instruction>> instMap = new HashMap<>();
 
     /**
      * Helper method responsible for filling the instruction map, after reading the inputted file at runtime.
      *
      * @param list The newly created Linked List of Instructions used to fill the HashMap with its corresponding offset as a key.
      */
-    private void fillInstMap(LList<Instruction> list) {
+    protected void fillInstMap(final LList<Instruction> list) {
 
         Node<Instruction> curr = list.getFirst();
 
         while (curr != null) {    //Iterates through all Instruction nodes for the HashMap.
-
-            Instruction instr = curr.getValue();
+            final Instruction instr = curr.getValue();
             instMap.put(instr.getOffset(), curr);    //Stores the Instruction node into the HashMap, using its offset as the key.
             curr = curr.getNext();
         }
@@ -48,7 +47,7 @@ public class Interpreter {
      * @param second The "first" operand of the expression, as the operation is flipped.
      * @return Returns the output from the corresponding operation, 0 if inconclusive.
      */
-    private int evaluateResult(Instruction inst, String opCode, int first, int second) {
+    private int evaluateResult(final Instruction inst, final String opCode, final int first, final int second) {
 
         int result = 0;
 
@@ -82,7 +81,7 @@ public class Interpreter {
      * @param opCode The Instruction name used for parsing the value, -1 if not found.
      * @return Returns the parsed value, -1 if unsuccessful.
      */
-    private int parseValue(String opCode) {
+    protected int parseValue(final String opCode) {
 
         int value = -1;
         int index = opCode.indexOf("_");        //Locates the index where an _ is found, if possible.
@@ -107,7 +106,7 @@ public class Interpreter {
      * @param opCode The instruction name for the current Instruction being evaluated.
      * @return Returns true if successfully evaluated, false otherwise.
      */
-    private boolean evaluatePhaseOne(Instruction inst, String opCode) {
+    protected boolean evaluatePhaseOne(final Instruction inst, String opCode) {
 
         if (opCode == null) {
             return false;
@@ -166,7 +165,7 @@ public class Interpreter {
      * @param opCode The Instruction name for the current Instruction being evaluated.
      * @return Returns the next offset when a non-conditional/conditional jump is performed, -1 to indicate moving to the next Instruction.
      */
-    private int evaluatePhaseTwo(Instruction inst, String opCode) {
+    protected int evaluatePhaseTwo(final Instruction inst, String opCode) {
 
         if (opCode == null) {
             return -1;
@@ -178,11 +177,10 @@ public class Interpreter {
         int varIndex = -1;
         int offsetNo = -1;
 
-        int numParams = inst.getNumParameters();
+        final int numParams = inst.getNumParameters();
 
         //Parses value following the _ , IF the instruction is NOT a conditional check.
         if ((opCode.contains("_")) && (!opCode.startsWith("if"))) {
-
             varIndex = parseValue(opCode);
             opCode = opCode.substring(0, opCode.indexOf("_"));
         }
@@ -195,11 +193,11 @@ public class Interpreter {
                     varIndex = inst.getParam1();
                 }
 
-                Integer val = indexMap.get(varIndex);
+                final Integer val = indexMap.get(varIndex);
                 intStack.push(val);
                 break;
             case "istore":
-                Integer value = intStack.pop();
+                final Integer value = intStack.pop();
 
                 if ((varIndex == -1) && (numParams == 1)) {
                     //Variation of istore where there is an index parameter, rather than an index following an underscore.
@@ -256,22 +254,21 @@ public class Interpreter {
      * @return Returns the Linked List of Instruction nodes represented by the inputted file.
      * @throws IOException Thrown when the file is unable to be read/processed.
      */
-    public static LList<Instruction> readFile(String filename) throws IOException {
+    public static LList<Instruction> readFile(final String filename) throws IOException {
 
-        LList<Instruction> instr = new LList<>();
+        final LList<Instruction> instr = new LList<>();
 
-        File file = new File(filename);
+        final File file = new File(filename);
 
         //Validation that the file exists and/or is a legitimate file.
         if ((!file.isFile()) || (!file.exists())) {
             throw new IOException("File not Found...");
         }
 
-        Scanner sc = new Scanner(file);
+        final Scanner sc = new Scanner(file, "UTF-8");
 
         //Reads the file line by line, until a newline is found.
         while (sc.hasNext()) {
-
             Instruction instruction = new Instruction(sc.nextLine());        //Creates a new Instruction based on the read line.
             instr.insertLast(new Node<Instruction>(instruction));            //Inserts the Instruction node into the Linked List.
         }
@@ -285,7 +282,7 @@ public class Interpreter {
      *
      * @param list The Linked List of Instruction nodes containing all instructions to be evaluated.
      */
-    public void evaluateInstructions(LList<Instruction> list) {
+    public void evaluateInstructions(final LList<Instruction> list) {
 
         //Initial check for a null list.
         if (list == null) {
@@ -300,7 +297,7 @@ public class Interpreter {
 
         while (curr != null) {
 
-            String opCode = curr.getValue().getOpcode();
+            final String opCode = curr.getValue().getOpcode();
 
             if (opCode != null) {
 
@@ -322,7 +319,7 @@ public class Interpreter {
      *
      * @param args The command-line arguments containing the input file used for testing purposes.
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) throws Throwable {
 
 
         if (args.length != 1) {
@@ -331,7 +328,7 @@ public class Interpreter {
         }
 		
 		try {
-			LList<Instruction> input = readFile(args[0]);		
+			final LList<Instruction> input = readFile(args[0]);		
 			new Interpreter().evaluateInstructions(input);		
 		}
 		catch(IOException e) {
