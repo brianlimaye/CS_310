@@ -84,7 +84,7 @@ public class LList<T> {
      *
      * @param newNode A generic node to be inserted at the end.
      */
-    public void insertLast(Node<T> newNode) {
+    public void insertLast(final Node<T> newNode) {
 
         //Check for an invalid node.
         if (newNode == null) {
@@ -152,7 +152,7 @@ public class LList<T> {
      *
      * @param args Command-line arguments primarily used for testing the functionality at runtime.
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) throws Throwable {
 
         /**
          *Inner class representing an arbitrary type for testing.
@@ -194,7 +194,7 @@ public class LList<T> {
             */
             public int hashCode()
             {
-                return toString().hashCode();
+                return value;
             }
         }
 

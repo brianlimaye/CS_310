@@ -9,7 +9,7 @@ public class Stack<T> {
     /**
      * A Linked List of elements used to internally store the contents of the Stack.
      */
-    protected LList<T> elements;
+    protected final LList<T> elements;
 
     /**
      * Stores the current size of the Stack.
@@ -20,7 +20,6 @@ public class Stack<T> {
      * Default constructor used to initialize a Stack instance.
      */
     public Stack() {
-
         this.elements = new LList<>();
         this.currentSize = 0;
     }
@@ -31,11 +30,9 @@ public class Stack<T> {
      * @param e The generic value to be added to the Stack.
      */
     public void push(final T e) {
-
         if (e == null) {
             return;
         }
-
         elements.insertFirst(e);
         ++currentSize;
     }
@@ -149,7 +146,7 @@ public class Stack<T> {
              */
             public int hashCode()
             {
-                return toString().hashCode();
+                return value;
             }
         }
 
@@ -200,5 +197,15 @@ public class Stack<T> {
         if (s.isEmpty()) {
             System.out.println("Yay6");
         }
+
+        s.pop();
+        s.pop();
+
+        s.push(item1);
+        s.pop();
+                s.pop();
+
+
+        System.out.println(s.getSize());
     }
 }

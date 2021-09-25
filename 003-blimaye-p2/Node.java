@@ -50,7 +50,7 @@ public class Node<T> {
      *
      * @param value The generic value to be set.
      */
-    public void setValue(T value) {
+    public void setValue(final T value) {
         this.value = value;
     }
 

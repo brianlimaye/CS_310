@@ -12,15 +12,15 @@ public class Interpreter {
     /**
      * A Stack used for the entirety of Phase1, pushing/popping values on/from the Stack.
      */
-    protected Stack<Integer> intStack = new Stack<>();
+    protected final Stack<Integer> intStack = new Stack<>();
     /**
      * A HashMap used in Phase2 to store values internally with their respective keys for lookup/updating.
      */
-    protected HashMap<Integer, Integer> indexMap = new HashMap<>();
+    protected final HashMap<Integer, Integer> indexMap = new HashMap<>();
     /**
      * A HashMap also used in Phase2 to match the offset of an instruction with its corresponding Instruction, stored as a value in a Node.
      */
-    protected HashMap<Integer, Node<Instruction>> instMap = new HashMap<>();
+    protected final HashMap<Integer, Node<Instruction>> instMap = new HashMap<>();
 
     /**
      * Helper method responsible for filling the instruction map, after reading the inputted file at runtime.

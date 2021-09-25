@@ -269,6 +269,7 @@ public class HashMap<K, V> {
      */
     public static void main(String args[]) {
         HashMap<Integer, String> map = new HashMap<>();
+
         for (int i = 0; i < 10000; i++) {
             map.put(i, "Val" + i);
         }
