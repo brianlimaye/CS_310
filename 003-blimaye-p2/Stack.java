@@ -1,35 +1,53 @@
-// TO DO: add your implementation and JavaDocs.
-
+/**
+ *A class representing a simple Stack.
+ *@param <T> A generic type for the Stack.
+ *@author Brian Limaye
+ */
 public class Stack<T> {  
-	// use a linked list (not an array)       
+	
+	/**
+	 *A Linked List of elements used to internally store the contents of the Stack.
+	 */      
 	private LList<T> elements;
 	
-	// keeps track of the number of elements on the stack
+	/**
+	 *Stores the current size of the Stack.
+	 */
 	private int currentSize;
 	
-	// initialize the stack to being an empty stack (or list)
+	/**
+	 *Default constructor used to initialize a Stack instance.
+	 */
 	public Stack() {
 
 		this.elements = new LList<>();
 		this.currentSize = 0;
 	}
 
-	// insert element at the begining of the list
-	// O(1)
+	/**
+	 *Adds a generic value to the Stack.
+	 *@param e The generic value to be added to the Stack.
+	 */
 	public void push(T e) {
+
+		if(e == null) {
+			return;
+		}
 
 		elements.insertFirst(e);
 		++currentSize;
 	}
 
-	// remove element at the begining of the list and return it
-	// O(1)
+	/**
+	 *Removes the top-most value from the Stack, if possible.
+	 *@return Returns the top element from the Stack, null if empty.
+	 */
 	public T pop() {
 		
 		Node<T> removed = elements.removeFirst();
 
+		//If there had existed an item prior to deletion, the size is decremented and the value is returned.
 		if(removed != null) {
-			//System.out.println("POP!");
 			--currentSize;
 			return removed.getValue();
 		}
@@ -37,12 +55,15 @@ public class Stack<T> {
 		return null;
 	}
 
-	// return element at begining of list
-	// O(1)
+	/**
+	 *Obtains the top-most value from the Stack, if possible.
+	 *@return Returns the top element from the Stack, null if empty.
+	 */
 	public T peek() {
 
 		Node<T> first = elements.getFirst();
 		
+		//If head had not been null, there exists an item at the front.
 		if(first != null) {
 			return first.getValue();
 		}
@@ -50,29 +71,60 @@ public class Stack<T> {
 		return null;
 	}
 
-	// O(1)
+	/**
+	 *Determines whether or not the Stack is empty.
+	 *@return Returns true if the stack is empty, false otherwise.
+	 */
 	public boolean isEmpty() {
 		return currentSize == 0;		
 	}
 
-	// O(1)
+	/**
+	 *Gets the current size of the Stack.
+	 *@return Returns the current size of the Stack.
+	 */
 	public int getSize() {	
 		return currentSize;
 	}
 
-	// return string representing the values in the stack from top to bottom
-	// O(n)
+	/**
+	 *Gets the human interpreted representation of the current Stack instance.
+	 *@return Returns the human interpreted representation of the Stack.
+	 */
 	public String toString() { 
 		
 		return elements.listToString();
 	}
 
+	/**
+	 *Main method primarily used for testing the functionality of the Stack class implementation.
+	 *@param args Command-line arguments primarily used for testing functionality at runtime.
+	 */
 	public static void main(String[] args) {
+		/**
+		 *Inner class representing an arbitrary type for testing.
+		 */
 		class SomeType {
+			/**
+			 *A value.
+			 */
 			private int value;
 
+			/**
+			 *One-arg constructor for creating a new SomeType instance.
+			 *@param value The value to be set.
+			 */
 			public SomeType(int value) { this.value = value; }
+			/**
+			 *Gets the human interpreted representation for the SomeType instance.
+			 *@return Returns the human interpreted representation for the SomeType.
+			 */
 			public String toString() { return "" + value; }
+			/**
+			 *Compares the current SomeType and the parameter Object, if both are SomeTypes.
+			 *@param o The other object being compared.
+			 *@return Returns true if both are equal, false otherwise.
+			 */
 			public boolean equals(Object o) {
 				if (!(o instanceof SomeType)) return false;
 				return ((SomeType)o).value == value;

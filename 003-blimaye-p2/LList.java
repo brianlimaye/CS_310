@@ -1,30 +1,46 @@
-// TO DO: add your implementation and JavaDocs.
-
+/**
+ *A Class that represents a basic implementation of a Linked List of generic values.
+ *@param <T> A generic type of Nodes.
+ *@author Brian Limaye
+ */
 public class LList<T> { 
-	// singly linked list with both head and tail
+
+    /**
+	 *Represents the head of the given Linked List.
+	 */
    	private Node<T> head;
+	/**
+	 *Represents the tail of the given Linked List.
+	 */
 	private Node<T> tail;
 
-	// initialize the list to being an empty list
+	/**
+	 *Default constructor to initialize a new Linked List.
+	 */
 	public LList(){
 
 		this.head = null;
 		this.tail = null;
 	}
 	
-	// returns the first node in the list
-	// O(1)
+	/**
+	 *Gets the head of the Linked List.
+	 *@return Returns the head.
+	 */
 	public Node<T> getFirst() {
 
 		return this.head;
 	}
 
-	// inserts a new node with value T at the begining of the list
-	// O(1)
+	/**
+	 *Inserts a new value with value T at the front of the Linked List.
+	 *@param value A generic value to be inserted at the front.
+	 */
 	public void insertFirst(T value) {
 
 		Node<T> first;
 
+		//If head is null, a simple reassignment is sufficient.
 		if(head == null) {
 
 			head = new Node<>(value);
@@ -32,15 +48,24 @@ public class LList<T> {
 			return;
 		}
 
+		//Otherwise, a new node is created, while references are set from the previous head and the new head.
 		first = new Node<>(value);
 		first.setNext(head);
 		head = first;
 	}
 	
-	// inserts a new node with value T at the begining of the list
-	// O(1)
+	/**
+	 *Inserts a new node with value T at the front of the Linked List.
+	 *@param newNode A generic node to be inserted at the front.
+	 */
 	public void insertFirst(Node<T> newNode) {
 
+		//Check for an invalid node.
+		if(newNode == null) {
+			return;
+		}
+
+		//If head is null, a simple reassignment is sufficient.
 		if(head == null) {
 
 			head = newNode;
@@ -48,14 +73,23 @@ public class LList<T> {
 			return;
 		}
 
+		//Otherwise, references are set from the previous head and the new head.
 		newNode.setNext(head);
 		head = newNode;
 	}
 
-	// inserts a new node with value T at the end of the list
-	// O(1)
+	/**
+	 *Inserts a new node with value T at the end of the Linked List.
+	 *@param newNode A generic node to be inserted at the end.
+	 */
 	public void insertLast(Node<T> newNode) {
 
+		//Check for an invalid node.
+		if(newNode == null) {
+			return;
+		}
+
+		//If tail is null, a simple reassignment is sufficient.
 		if(tail == null) {
 
 			tail = newNode;
@@ -63,39 +97,44 @@ public class LList<T> {
 			return;
 		}
 
+		//Otherwise, references are set from the previous head and the new head.
 		tail.setNext(newNode);
 		newNode.setNext(null);
 		tail = newNode;		
 	}
 
-	// remove and return the first node in the list
-	// O(1)
+	/**
+	 *Removes the first node of the Linked List, if possible.
+	 *@return Returns the removed node, if possible.
+	 */
 	public Node<T> removeFirst() {
 
+		//Case where the Linked List is already empty.
 		if(head == null) {
 			return null;
 		}
 
+		//Stores the head, prior to changing the head reference to the next node.
 		Node<T> first = head;
 		head = head.getNext();
 		return first;
 	}
 	
-	//To-Do: Fix Big O...
-	// return a string representing the values in the list seperated by a single space
-	// O(n)
-	// Warning: concatenating String objects will yield a O(n^2) solution
+	/**
+	 *Returns the representation of the Linked List, with only its values being outputted.
+	 *@return Returns the list of values for each Node in the Linked List.
+	 */
 	public String listToString() {  
 
 		Node<T> curr = head;
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder(); 	//Used for an optimized time complexity for appension.
 
 		while(curr != null) {
 
-			sb.append(curr.getValue());
+			sb.append(curr.getValue());		//Appends the value to the outputstring.
 
 			if(curr.getNext() != null) {
-				sb.append(" ");
+				sb.append(" ");		//Each value is delimited by a space, EXCEPT for the last node.
 			}
 
 			curr = curr.getNext();
@@ -104,12 +143,36 @@ public class LList<T> {
 		return sb.toString();
 	}
 
+	/**
+	 *Main method used for testing the functionality of the Linked List implementation.
+	 *@param args Command-line arguments primarily used for testing the functionality at runtime.
+	 */
 	public static void main(String[] args) {
+		
+		/**
+		 *Inner class representing an arbitrary type for testing.
+		 */
 		class SomeType {
+			/**
+			 *A value.
+			 */
 			private int value;
 
+			/**
+			 *One-arg constructor for creating a new SomeType instance.
+			 *@param value The value to be set.
+			 */
 			public SomeType(int value) { this.value = value; }
+			/**
+			 *Gets the human interpreted representation for the SomeType instance.
+			 *@return Returns the human interpreted representation for the SomeType.
+			 */
 			public String toString() { return "" + value; }
+			/**
+			 *Compares the current SomeType and the parameter Object, if both are SomeTypes.
+			 *@param o The other object being compared.
+			 *@return Returns true if both are equal, false otherwise.
+			 */
 			public boolean equals(Object o) {
 				if (!(o instanceof SomeType)) return false;
 				return ((SomeType)o).value == value;
