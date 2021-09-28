@@ -51,20 +51,20 @@ public class LList<T> {
             return;
         }
 
-        //Otherwise, a new node is created, while references are set from the previous head and the new head.
+        //Otherwise, a new Node is created, while references are set from the previous head and the new head.
         first = new Node<>(value);
         first.setNext(head);
         head = first;
     }
 
     /**
-     * Inserts a new node with value T at the front of the Linked List.
+     * Inserts a new Node with value T at the front of the Linked List.
      *
-     * @param newNode A generic node to be inserted at the front.
+     * @param newNode A generic Node to be inserted at the front.
      */
     public void insertFirst(Node<T> newNode) {
 
-        //Check for an invalid node.
+        //Check for an invalid Node.
         if (newNode == null) {
             return;
         }
@@ -83,13 +83,13 @@ public class LList<T> {
     }
 
     /**
-     * Inserts a new node with value T at the end of the Linked List.
+     * Inserts a new Node with value T at the end of the Linked List.
      *
-     * @param newNode A generic node to be inserted at the end.
+     * @param newNode A generic Node to be inserted at the end.
      */
     public void insertLast(Node<T> newNode) {
 
-        //Check for an invalid node.
+        //Check for an invalid Node.
         if (newNode == null) {
             return;
         }
@@ -109,9 +109,9 @@ public class LList<T> {
     }
 
     /**
-     * Removes the first node of the Linked List, if possible.
+     * Removes the first Node of the Linked List, if possible.
      *
-     * @return Returns the removed node, if possible.
+     * @return Returns the removed Node, if possible.
      */
     public Node<T> removeFirst() {
 
@@ -120,7 +120,7 @@ public class LList<T> {
             return null;
         }
 
-        //Stores the head, prior to changing the head reference to the next node.
+        //Stores the head, prior to changing the head reference to the next Node.
         Node<T> first = head;
         head = head.getNext();
         return first;
@@ -141,7 +141,7 @@ public class LList<T> {
             sb.append(curr.getValue());        //Appends the value to the output string.
 
             if (curr.getNext() != null) {
-                sb.append(" ");        //Each value is delimited by a space, EXCEPT for the last node.
+                sb.append(" ");        //Each value is delimited by a space, EXCEPT for the last Node.
             }
 
             curr = curr.getNext();

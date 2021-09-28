@@ -1,17 +1,17 @@
 /**
- * A generic class representing a node in the linked list implementation LList.
+ * A generic class representing a Node in the linked list implementation LList.
  *
  * @param <T> The generic type for the Node.
  * @author W. Masri
  */
 public class Node<T> {
     /**
-     * The node's value.
+     * The Node's value.
      */
     private T value;
 
     /**
-     * The node's link to the next element in the linked list.
+     * The Node's reference to the next element in the linked list.
      */
     private Node<T> next;
 

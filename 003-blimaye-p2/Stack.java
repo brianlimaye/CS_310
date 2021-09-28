@@ -78,7 +78,7 @@ public class Stack<T> {
     /**
      * Determines whether or not the Stack is empty.
      *
-     * @return Returns true if the stack is empty, false otherwise.
+     * @return Returns true if the Stack is empty, false otherwise.
      */
     public boolean isEmpty() {
         return currentSize == 0;

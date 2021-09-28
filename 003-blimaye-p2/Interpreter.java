@@ -3,7 +3,7 @@ import java.io.File;
 import java.util.Scanner;
 
 /**
- * A class that simulates a JVM interpreter that reads certain instructions, producing the desired output.
+ * A class that simulates a JVM interpreter that reads certain Instructions, producing the desired output.
  *
  * @author Brian Limaye
  */
@@ -18,12 +18,12 @@ public class Interpreter {
      */
     private HashMap<Integer, Integer> indexMap = new HashMap<>();
     /**
-     * A HashMap also used in Phase2 to match the offset of an instruction with its corresponding Instruction, stored as a value in a Node.
+     * A HashMap also used in Phase2 to match the offset of an Instruction with its corresponding Instruction, stored as a value in a Node.
      */
     private HashMap<Integer, Node<Instruction>> instMap = new HashMap<>();
 
     /**
-     * Helper method responsible for filling the instruction map, after reading the inputted file at runtime.
+     * Helper method responsible for filling the Instruction map, after reading the inputted file at runtime.
      *
      * @param list The newly created Linked List of Instructions used to fill the HashMap with its corresponding offset as a key.
      */
@@ -40,15 +40,14 @@ public class Interpreter {
     }
 
     /**
-     * Helper method responsible for evaluating the arithmetic/geometric operation on two numbers, based on the instruction name.
+     * Helper method responsible for evaluating the arithmetic operation on two numbers, based on the Instruction name.
      *
-     * @param inst   The instruction instance used to determine the corresponding operation.
-     * @param opCode The instruction name used to determine the corresponding operation.
+     * @param opCode The Instruction name used to determine the corresponding operation.
      * @param first  The "second" operand of the expression, as the operation is flipped.
      * @param second The "first" operand of the expression, as the operation is flipped.
      * @return Returns the output from the corresponding operation, 0 if inconclusive.
      */
-    private int evaluateResult(Instruction inst, String opCode, int first, int second) {
+    private int evaluateResult(String opCode, int first, int second) {
 
         int result = 0;
 
@@ -104,7 +103,7 @@ public class Interpreter {
      * Helper function responsible for evaluating a Phase1 Instruction.
      *
      * @param inst   The next Instruction to be evaluated, while determining if it belongs to Phase1.
-     * @param opCode The instruction name for the current Instruction being evaluated.
+     * @param opCode The Instruction name for the current Instruction being evaluated.
      * @return Returns true if successfully evaluated, false otherwise.
      */
     private boolean evaluatePhaseOne(Instruction inst, String opCode) {
@@ -123,7 +122,7 @@ public class Interpreter {
             opCode = opCode.substring(0, opCode.indexOf("_"));
         }
 
-        //Case where the value cannot be parsed successfully.
+        //Rare case where the value cannot be parsed successfully.
         if (value == -1) {
             return false;
         }
@@ -141,14 +140,13 @@ public class Interpreter {
             case "idiv":
             case "isub":
             case "irem":
-                //if(intStack.getSize() < 2) { break; }
                 int firstVal = intStack.pop();
                 int secondVal = intStack.pop();
-                result = evaluateResult(inst, opCode, firstVal, secondVal);
+                result = evaluateResult(opCode, firstVal, secondVal);
                 intStack.push(result);
                 break;
             case "print":
-                System.out.println(intStack.pop());
+                System.out.print(intStack.pop() + " ");
                 break;
             case "return":
                 break;
@@ -180,7 +178,7 @@ public class Interpreter {
 
         int numParams = inst.getNumParameters();
 
-        //Parses value following the _ , IF the instruction is NOT a conditional check.
+        //Parses value following the _ , IF the Instruction is NOT a conditional check.
         if ((opCode.contains("_")) && (!opCode.startsWith("if"))) {
 
             varIndex = parseValue(opCode);
@@ -219,7 +217,6 @@ public class Interpreter {
                 offsetNo = (intStack.pop() == intStack.pop()) ? inst.getParam1() : offsetNo;
                 break;
             case "if_icmpne":
-                //If value1 and value2 are NOT equal, a conditional jump is performed at the first parameter of the Instruction.
                 offsetNo = (intStack.pop() != intStack.pop()) ? inst.getParam1() : offsetNo;
                 break;
             case "if_icmpge":
@@ -227,7 +224,6 @@ public class Interpreter {
                 offsetNo = (intStack.pop() <= intStack.pop()) ? inst.getParam1() : offsetNo;
                 break;
             case "if_icmpgt":
-                //If value1 < value2, a conditional jump is performed at the first parameter of the Instruction.
                 offsetNo = (intStack.pop() < intStack.pop()) ? inst.getParam1() : offsetNo;
                 break;
             case "if_icmple":
@@ -235,7 +231,6 @@ public class Interpreter {
                 offsetNo = (intStack.pop() >= intStack.pop()) ? inst.getParam1() : offsetNo;
                 break;
             case "if_icmplt":
-                //If value1 > value2, a conditional jump is performed at the first parameter of the Instruction.
                 offsetNo = (intStack.pop() > intStack.pop()) ? inst.getParam1() : offsetNo;
                 break;
             case "ifne":
@@ -267,7 +262,7 @@ public class Interpreter {
             throw new IOException("File not Found...");
         }
 
-        Scanner sc = new Scanner(file);
+        Scanner sc = new Scanner(file, "UTF-8");
 
         //Reads the file line by line, until a newline is found.
         while (sc.hasNext()) {
@@ -281,9 +276,9 @@ public class Interpreter {
     }
 
     /**
-     * Responsible for evaluating ALL instructions from the Linked List, whether they are Phase1 or Phase2 instructions.
+     * Responsible for evaluating ALL Instructions from the Linked List, whether they are Phase1 or Phase2 Instructions.
      *
-     * @param list The Linked List of Instruction nodes containing all instructions to be evaluated.
+     * @param list The Linked List of Instruction nodes containing all Instructions to be evaluated.
      */
     public void evaluateInstructions(LList<Instruction> list) {
 
@@ -329,31 +324,27 @@ public class Interpreter {
             System.out.println("Usage: java Interpreter [filename]");
             System.exit(0);
         }
-		
-		try {
-			LList<Instruction> input = readFile(args[0]);		
-			new Interpreter().evaluateInstructions(input);		
-		}
-		catch(IOException e) {
-			System.out.println(e.toString());
-			e.printStackTrace();
-		}	
-		
-		/*
+
+        try {
+            LList<Instruction> input = readFile(args[0]);
+            new Interpreter().evaluateInstructions(input);
+        } catch (IOException e) {
+            System.out.println(e.toString());
+            e.printStackTrace();
+        }
+
+
+        /*
         // to test the readFile() method, do something similar to below
         try {
             LList<Instruction> input1 = readFile(args[0]);
-            System.out.println(input1.listToString());
-            if (input1.listToString().equals("0: iconst_1  1: iconst_2  2: iadd  3: print  6: return")) {
+            if (input1.listToString().equals("0: iconst_4  1: istore_1  2: iconst_5  3: istore_2  4: iload_1  5: iload_2  6: iadd  7: istore_3  8: iload_3  9: print  12: return")) {
                 System.out.println("Yay1");
             }
         } catch (IOException e) {
             System.out.println(e.toString());
             e.printStackTrace();
         }
-
-        //System.out.println(-17 % 7);
         */
-
     }
 }

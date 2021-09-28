@@ -185,7 +185,7 @@ public class HashMap<K, V> {
 
 
     /**
-     * Puts the new (key, value) pair into the HashMap of keys and values.
+     * Puts the new (key, value) Pair into the HashMap of keys and values.
      *
      * @param key   The generic key associated with the pair.
      * @param value The generic value associated with the pair.
@@ -200,13 +200,14 @@ public class HashMap<K, V> {
 
 
         int hash = getHash(key);                //Computes the hashcode based on the key.
-        int index = hash % buckets.length;        //Computes the correct bucket, in which the pair should be stored.
+        int index = hash % buckets.length;        //Computes the correct bucket, in which the Pair should be stored.
         Node<Pair> curr = buckets[index].getFirst();
 
         while (curr != null) {
 
             //Compares each stored element and their respective keys for a match.
-            if (getHash((K) curr.getValue().getKey()) == hash) {
+            K currentKey = (K) curr.getValue().getKey();
+            if ((getHash(currentKey) == hash) && (key.equals(currentKey))) {
 
                 curr.getValue().setValue(value);
                 return;
@@ -216,12 +217,12 @@ public class HashMap<K, V> {
         }
 
         //Case where appending is necessary to the bucket.
-        ++size;
         buckets[index].insertLast(new Node<Pair>(new Pair<>(key, value)));
+        ++size;
     }
 
     /**
-     * Gets an existing (key, value) pair from the HashMap of keys and values, if possible.
+     * Gets an existing (key, value) Pair from the HashMap of keys and values, if possible.
      *
      * @param key The generic key used for lookup.
      * @return Returns the generic value associated with the key, if found.
@@ -235,7 +236,7 @@ public class HashMap<K, V> {
         }
 
         int hash = getHash(key);            //Computes the hashcode based on the key.
-        int index = hash % buckets.length;    //Computes the correct bucket, in which the pair should be found.
+        int index = hash % buckets.length;    //Computes the correct bucket, in which the Pair should be found.
         Node<Pair> curr = buckets[index].getFirst();
 
         while (curr != null) {

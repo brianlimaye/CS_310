@@ -7,7 +7,7 @@ import java.util.*;
  */
 public class Instruction {
     /**
-     * Represents the "offset" or the instruction number of a particular Instruction instance.
+     * Represents the "offset" or the Instruction number of a particular Instruction instance.
      */
     private int offset;
     /**
@@ -61,7 +61,7 @@ public class Instruction {
      */
     public String toString() {
         String s = offset + ": " + opcode + " ";
-        if (parameters != null) {        //Appends the parameters to the String, if present.
+        if (parameters != null) {
             for (int param : parameters) {
                 s += param + " ";
             }
@@ -70,18 +70,18 @@ public class Instruction {
     }
 
     /**
-     * Gets the instruction number/offset of the current Instruction instance.
+     * Gets the Instruction number/offset of the current Instruction instance.
      *
-     * @return Returns the instruction number/offset for the Instruction.
+     * @return Returns the Instruction number/offset for the Instruction.
      */
     public int getOffset() {
         return offset;
     }
 
     /**
-     * Gets the instruction name/opcode of the current Instruction instance.
+     * Gets the Instruction name/opcode of the current Instruction instance.
      *
-     * @return Returns the instruction name/opcode of the current Instruction instance.
+     * @return Returns the Instruction name/opcode of the current Instruction instance.
      */
     public String getOpcode() {
         return opcode;
@@ -123,7 +123,7 @@ public class Instruction {
     /**
      * The main method solely responsible for testing the functionality of the Instruction class.
      *
-     * @param args Command-line arguments used for testing on the fly at run-time.
+     * @param args Command-line arguments used for testing on the fly at runtime.
      */
     public static void main(String args[]) {
 
