@@ -54,20 +54,20 @@ public class PriorityQueue<T extends Comparable<T>> implements Iterable<T> {
 	//-------------------------------------------------------------
 	
 	// ADD MORE PRIVATE MEMBERS HERE IF NEEDED!
+	private int currentSize;
 	
 	public PriorityQueue() {
 		//Constructor
 		//initializing members if needed
-
+		this.currentSize = 0;
 	}
 	
 	public int size(){
 		//Return the number of elements in the priority queue
 		//O(1)
-		return -1; //default return: change or remove as needed
+		return currentSize; //default return: change or remove as needed
 	}
 	
-
 	public void add(T value) {
 		//Add a value into the priority queue.  Use the value 
 		//as its priority.
@@ -82,10 +82,50 @@ public class PriorityQueue<T extends Comparable<T>> implements Iterable<T> {
 		
 		//O(n) where n is the number of items in queue.
 
+		if(value == null) {
+			return;
+		}
 
+		if(head == null) {
+
+			head = new Node<>(value);
+			++currentSize;
+			return;
+		}
+
+		Node<T> prev = null;
+		Node<T> curr = head;
+		Node<T> newNode = new Node<>(value);
+
+		while(curr != null) {
+
+			if(value.compareTo(curr.value) < 0) {
+
+				if(prev == null) {
+
+					newNode.next = head;
+					head = newNode;
+					break;
+				}
+
+				prev.next = newNode;
+				newNode.next = curr;
+				break;
+			}
+
+			if(curr.next == null) {
+
+				curr.next = newNode;
+				break;
+			}
+
+			prev = curr;
+			curr = curr.next;
+		}
+
+		++currentSize;
 	}
 
-	
 	public T remove( ) {
 		// Remove and return the value with the minimal priority value.
 		// If two or more items are of the same priority, keep their order 
@@ -98,9 +138,16 @@ public class PriorityQueue<T extends Comparable<T>> implements Iterable<T> {
 		//    "Priority queue empty!"
 
 		//O(1)
-		
-		return null; //default return: change or remove as needed
 
+		if(currentSize == 0) {
+			throw new NoSuchElementException("Priority queue empty!");
+		}
+
+		T removed = head.value;
+		head = head.next;
+		--currentSize;
+		
+		return removed; //default return: change or remove as needed
 	}
 	
 	public T element( ) {
@@ -115,9 +162,12 @@ public class PriorityQueue<T extends Comparable<T>> implements Iterable<T> {
 		//    "Priority queue empty!"
 
 		//O(1)
-		
-		return null; //default return: change or remove as needed
 
+		if(currentSize == 0) {
+			throw new NoSuchElementException("Priority queue empty!");
+		}
+		
+		return head.value; //default return: change or remove as needed
 	}
 
 	public boolean contains(T value){
@@ -127,9 +177,30 @@ public class PriorityQueue<T extends Comparable<T>> implements Iterable<T> {
 		// Hint: remember to use .equals() for comparison.
 		
 		//O(n) where n is the number of items in queue.
+
+		Iterator<T> iterator = this.iterator();
+
+		while(iterator.hasNext()) {
+
+			T currentElement = iterator.next();
+
+			if(currentElement.equals(value)) {
+				return true;
+			}
+		}
 		
 		return false; //default return: change or remove as needed
-	
+	}
+
+	public void printQueue() {
+
+		Node<T> curr = head;
+
+		while(curr != null) {
+
+			System.out.print(curr.value + " ");
+			curr = curr.next;
+		}
 	}
 	
 	//-------------------------------------------------------------
@@ -151,7 +222,7 @@ public class PriorityQueue<T extends Comparable<T>> implements Iterable<T> {
 		}
 				
 		//remove
-		if (letters.remove() == 'A' && letters.size() == 4 && letters.element() == 'M'){
+		if (letters.remove() == 'A' && letters.size() == 4 && letters.element() == 'M') {
 			System.out.println("Yay 2");
 		}
 		
@@ -183,9 +254,7 @@ public class PriorityQueue<T extends Comparable<T>> implements Iterable<T> {
 			msgs.contains(msg1) && msgs.contains(msg2) &&
 			msgs.element()==msg1 && msgs.remove() != msg2){  //use of "==" is intentional here
 			System.out.println("Yay 4");	
-		}
-	
-		
+		}	
 	}
 	
 }

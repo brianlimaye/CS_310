@@ -240,6 +240,10 @@ public class HashTable<K, V> implements Serializable{
 
 			TableEntry<K, V> currEntry = storage[currentProbe];
 
+			if(tombStates[currentProbe]) {
+				continue;
+			}
+
 			if(currEntry == null) {
 				break;
 			}
@@ -369,7 +373,21 @@ public class HashTable<K, V> implements Serializable{
 			&& ht2.toStringDebug().equals("[0]: null\n[1]: 22:B\n[2]: 37:C\n[3]: null\n[4]: null\n[5]: 12:A\n[6]: 47:D")) {
 			System.out.println("Yay 9");
 		}
-		
+
+		HashTable<Integer, String> ht4 = new HashTable<>(2);
+
+        ht4.put(45, "Pittman");
+        ht4.put(34, "Pierce");
+        ht4.put(37, "Artest");
+
+        //assertEquals(3, ht4.size());
+
+        //assertEquals("Artest", ht4.get(37));
+
+        //assertEquals("[0]: null\n[1]: 45:Pittman\n[2]: 34:Pierce\n[3]: 37:Artest", ht4.toStringDebug());
+
+        //assertEquals(null, ht4.remove(38));
+        //System.out.println(ht4.remove(34));
+        System.out.println(ht4.remove(37));
 	}
-	
 }

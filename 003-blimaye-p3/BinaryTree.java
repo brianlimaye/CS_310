@@ -17,6 +17,152 @@ public class BinaryTree implements Serializable {
 	// END OF PROVIDED "DO NOT EDIT" SECTION 
 	//-------------------------------------------------------------
 
+	private StringBuilder orderedWalk = new StringBuilder();
+
+	private String printLevelInfo(TreeNode node) {
+
+		class Node<T> {
+
+			T value;
+			Node<T> next;
+
+			Node(T value) {
+        		this.value = value;
+        		this.next = null;
+   			}
+
+			void setNext(Node<T> next) {
+        		this.next = next;
+    		}
+
+    		Node<T> getNext() {
+        		return this.next;
+    		}
+
+    		T getValue() {
+        		return value;
+    		}
+		}
+
+		class LinkedList<T> {
+
+			Node<T> head;
+			Node<T> tail;
+
+			LinkedList() {
+
+		        this.head = null;
+		        this.tail = null;
+    		}
+
+			void insertLast(Node<T> newNode) {
+
+		        if (newNode == null) {
+		            return;
+		        }
+
+		        if (tail == null) {
+
+		            tail = newNode;
+		            head = tail;
+		            return;
+		        }
+
+		        tail.setNext(newNode);
+		        newNode.setNext(null);
+		        tail = newNode;
+		    }
+
+		    void removeFirst() {
+
+		        if (head == null) {
+		            return;
+		        }
+
+		        head = head.getNext();
+		    }
+		}
+
+		if(root == null) {
+			return "";
+		}
+
+		int prevNumChildren = 1;
+		int numChildrenLevel = 0;
+		int levelNo = 0;
+		StringBuilder sb = new StringBuilder();
+		LinkedList<TreeNode> queue = new LinkedList<>();
+		queue.insertLast(new Node<TreeNode>(root));
+
+		while(queue.head != null) {
+
+			for(int i = 0; i < prevNumChildren; i++) {
+
+				if(queue.head == null) {
+					break;
+				}
+
+				TreeNode curr = queue.head.getValue();
+
+				if(curr.left != null) {
+					
+					queue.insertLast(new Node<TreeNode>(curr.left));
+					++numChildrenLevel;
+				}
+
+				if(curr.right != null) {
+
+					queue.insertLast(new Node<TreeNode>(curr.right));
+					++numChildrenLevel;
+				}
+	
+				sb.append(curr.toString());
+				queue.removeFirst();
+			}
+
+			levelNo = (numChildrenLevel != 0) ? levelNo + 1 : levelNo;
+			prevNumChildren = numChildrenLevel;
+			numChildrenLevel = 0;
+		}
+		
+		return sb.toString() + "(" + levelNo + ")"; //default return: change or remove as needed
+	}
+
+	private int calculateNumLeaves(TreeNode node) {
+
+		if(node == null) {
+			return 0;
+		}
+
+		if((node.left == null) && (node.right == null)) {
+			return 1;
+		}
+
+		return calculateNumLeaves(node.left) + calculateNumLeaves(node.right);
+	}
+
+	private void preOrderWalk(TreeNode node) {
+
+		if(node == null) {
+			return;
+		}
+
+		orderedWalk.append(node.toString());
+		preOrderWalk(node.left);
+		preOrderWalk(node.right);
+	}
+
+	private void inOrderWalk(TreeNode node) {
+
+		if(node == null) {
+			return;
+		}
+
+		inOrderWalk(node.left);
+		orderedWalk.append(node.toString());
+		inOrderWalk(node.right);
+	}
+
 	public int height(){
 		// Return the height of the tree.
 		// Return -1 for a null tree
@@ -24,10 +170,22 @@ public class BinaryTree implements Serializable {
 		// Hint: this is doable in _very_ few lines of code 
 		//       if you choose to use recursion.
 		//
-		// O(H): H as the tree height   
+		// O(H): H as the tree height
 
-		return -1; //default return: change or remove as needed
+		if(root == null) {
+			return -1;
+		}   
 
+		String path = printLevelInfo(root);
+
+		int indexOfParen = path.indexOf("(");
+		int indexOfClosing = path.indexOf(")");
+
+		if((indexOfParen == -1) || (indexOfClosing == -1)) {
+			return -1;
+		}
+
+		return Integer.parseInt(path.substring(indexOfParen + 1, indexOfClosing));
 	}
 	
 
@@ -40,7 +198,11 @@ public class BinaryTree implements Serializable {
 		//
 		// O(N): N is the tree size
 
-		return -1; //default return: change or remove as needed
+		if(root == null) {
+			return -1;
+		}
+
+		return calculateNumLeaves(root); //default return: change or remove as needed
 	}
 	
 	
@@ -55,7 +217,15 @@ public class BinaryTree implements Serializable {
 		// Hint: this is doable in _very_ few lines of code 
 		//       if you choose to use recursion.
 
-		return ""; //default return: change or remove as needed
+		if(root == null) {
+			return "";
+		} 
+
+		preOrderWalk(root);
+		String path = orderedWalk.toString();
+		orderedWalk.setLength(0);
+
+		return path; //default return: change or remove as needed
 	}
 	
 
@@ -71,7 +241,16 @@ public class BinaryTree implements Serializable {
 		//       if you choose to use recursion.
 		//
 
-		return ""; //default return: change or remove as needed
+		if(root == null) {
+			return "";
+		}
+
+		inOrderWalk(root);
+		String path = orderedWalk.toString();
+
+		orderedWalk.setLength(0);
+
+		return path; //default return: change or remove as needed
 	}
 	
 	
@@ -95,12 +274,16 @@ public class BinaryTree implements Serializable {
 		// It is also easy to reuse the linked list class from 
 		// Project 2 to implement a FIFO queue and help with the 
 		// level-order traversal.
-		
-		return ""; //default return: change or remove as needed
-	
-	}
-	
 
+		String path = printLevelInfo(root);
+		int indexOfParen = path.indexOf("(");
+
+		if(indexOfParen == -1) {
+			return path;
+		}
+
+		return path.substring(0, indexOfParen);
+	}
 	
 	//-------------------------------------------------------------
 	// Main Method For Your Testing -- Edit all you want
@@ -151,6 +334,8 @@ public class BinaryTree implements Serializable {
 			System.out.println("Yay4");
 		}
 		
+		//System.out.println(tree.toStringLevelOrder());
+
 		if (tree.toStringLevelOrder().equals("<r,1><a,2><e,10><b,3><c,4><d,5>")){
 			System.out.println("Yay5");
 		}
