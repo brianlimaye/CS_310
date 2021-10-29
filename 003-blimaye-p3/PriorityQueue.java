@@ -1,24 +1,49 @@
 import java.util.NoSuchElementException;
 import java.util.Iterator;
 
+/**
+ * Class represents a simple implementation of a Priority Queue.
+ * @param <T> The generic type of the Priority Queue.
+ * @author Brian Limaye
+ */
 public class PriorityQueue<T extends Comparable<T>> implements Iterable<T> {
 
 	//-------------------------------------------------------------
 	// DO NOT EDIT ANYTHING FOR THIS SECTION EXCEPT TO ADD JAVADOCS
 	//-------------------------------------------------------------
 	
+	/**
+	 * The head of the Priority Queue.
+	 */
 	private Node<T> head = null;
 	
 	//provided linked list node class
+	/**
+	 * Class represents a Node to be stored in the Priority Queue.
+	 * @param <T> The generic type of the Node.
+	 * @author Yutao Zhong
+	 */
 	private static class Node<T> {
+		/**
+		 * The value stored within the Node.
+		 */
 		private T value;
-		
+		/**
+		 * The next reference stored within the Node.
+		 */
 		private Node<T> next;
-		
+		/**
+		 * One-argument constructor to initialize a new Node with a value.
+		 * @param value The value to be set for the Node.
+		 */
 		public Node(T value) { this.value = value; }
 	}
 		
 	//provided toString() method using the iterator
+	/**
+	 * Gets the human interpreted version of the current Priority Queue instance.
+	 * @return Returns the human interpreted version of the current Priority Queue instance.
+	 */
 	public String toString(){
 		StringBuilder builder = new StringBuilder("");
 		for (T value : this){
@@ -30,6 +55,10 @@ public class PriorityQueue<T extends Comparable<T>> implements Iterable<T> {
 	
 	//provided iterator, if your code is working, this should
 	//work too...
+	/**
+	 * Gets an iterator associated with traversing the Priority Queue.
+	 * @return Returns an iterator of generic type of the Priority Queue.
+	 */
 	public Iterator<T> iterator() {
 		return new Iterator<T>() {
 			Node<T> current = head;
@@ -54,38 +83,43 @@ public class PriorityQueue<T extends Comparable<T>> implements Iterable<T> {
 	//-------------------------------------------------------------
 	
 	// ADD MORE PRIVATE MEMBERS HERE IF NEEDED!
+	
+	/**
+	 * The current size of the Priority Queue.
+	 */
 	private int currentSize;
 	
+	/**
+	 * Default constructor to initalize a new PriorityQueue instance.
+	 */
 	public PriorityQueue() {
 		//Constructor
 		//initializing members if needed
 		this.currentSize = 0;
 	}
 	
+	/**
+	 * Gets the current size of the current PriorityQueue instance.
+	 * @return Returns the current size of the current PriorityQueue instance.
+	 */
 	public int size(){
 		//Return the number of elements in the priority queue
 		//O(1)
 		return currentSize; //default return: change or remove as needed
 	}
 	
+	/**
+	 * Adds a value into the PriorityQueue based on the intrinsic priority of its nature.
+	 * @param value The value to be added to the PriorityQueue.
+	 */
 	public void add(T value) {
-		//Add a value into the priority queue.  Use the value 
-		//as its priority.
 		
-		//The priority queue must be organized as a sorted singly
-		//linked list.  No dummy nodes.  
-		
-		//Hint: you will need to decide a way to store/sort the values
-		// so that the remove/element methods can also meet the required 
-		// behavior and big-O in time. Do check the requirements of 
-		// remove()/element() below before you code this method.
-		
-		//O(n) where n is the number of items in queue.
-
+		//Check for an invalid value.
 		if(value == null) {
 			return;
 		}
 
+		//Special case where the head hasn't been set yet, where the priority queue is empty.
 		if(head == null) {
 
 			head = new Node<>(value);
@@ -99,6 +133,7 @@ public class PriorityQueue<T extends Comparable<T>> implements Iterable<T> {
 
 		while(curr != null) {
 
+			//Traverses the PriorityQueue until a bigger value is found.
 			if(value.compareTo(curr.value) < 0) {
 
 				if(prev == null) {
@@ -113,6 +148,7 @@ public class PriorityQueue<T extends Comparable<T>> implements Iterable<T> {
 				break;
 			}
 
+			//Special case where set value is greater than all values in the queue.
 			if(curr.next == null) {
 
 				curr.next = newNode;
@@ -126,18 +162,11 @@ public class PriorityQueue<T extends Comparable<T>> implements Iterable<T> {
 		++currentSize;
 	}
 
+	/**
+	 * Attempts to remove the element at the start of the queue.
+	 * @return Returns the removed smallest value at the front of the queue.
+	 */
 	public T remove( ) {
-		// Remove and return the value with the minimal priority value.
-		// If two or more items are of the same priority, keep their order 
-		// as FIFO, i.e. the one that was added earlier should be removed first.
-		// Check main() below for examples.
-			
-		// Throw NoSuchElementException if queue is empty. 
-		// Use this _exact_ error message for the exception
-		// (quotes are not part of the message):
-		//    "Priority queue empty!"
-
-		//O(1)
 
 		if(currentSize == 0) {
 			throw new NoSuchElementException("Priority queue empty!");
@@ -147,36 +176,28 @@ public class PriorityQueue<T extends Comparable<T>> implements Iterable<T> {
 		head = head.next;
 		--currentSize;
 		
-		return removed; //default return: change or remove as needed
+		return removed;
 	}
 	
+	/**
+	 * Gets the element at the start of the queue.
+	 * @return Returns the smallest value at the front of the queue.
+	 */
 	public T element( ) {
-		// Return (but do not remove) the value with the minimal priority value.
-		// If two or more items are of the same priority, keep the order 
-		// as FIFO, i.e. the one that was added earlier should be reported.
-		// Check main() below for examples.
-		
-		// Throw NoSuchElementException if queue is empty. 
-		// Use this _exact_ error message for the exception
-		// (quotes are not part of the message):
-		//    "Priority queue empty!"
-
-		//O(1)
 
 		if(currentSize == 0) {
 			throw new NoSuchElementException("Priority queue empty!");
 		}
 		
-		return head.value; //default return: change or remove as needed
+		return head.value;
 	}
 
+	/**
+	 * Checks to see if the priority queue contains a given value.
+	 * @param value The value to be checked within the queue.
+	 * @return Returns true if the value was found. False otherwise.
+	 */
 	public boolean contains(T value){
-		// Return true if value is present in queue; 
-		// return false otherwise.
-		
-		// Hint: remember to use .equals() for comparison.
-		
-		//O(n) where n is the number of items in queue.
 
 		Iterator<T> iterator = this.iterator();
 
@@ -189,24 +210,17 @@ public class PriorityQueue<T extends Comparable<T>> implements Iterable<T> {
 			}
 		}
 		
-		return false; //default return: change or remove as needed
-	}
-
-	public void printQueue() {
-
-		Node<T> curr = head;
-
-		while(curr != null) {
-
-			System.out.print(curr.value + " ");
-			curr = curr.next;
-		}
+		return false;
 	}
 	
 	//-------------------------------------------------------------
 	// Main Method For Your Testing -- Edit all you want
 	//-------------------------------------------------------------
 	
+	/**
+	 * Main method primarily used for testing the PriorityQueue implementation.
+	 * @param args Command-line arguments used for dynamically testing the functionality at runtime.
+	 */
 	public static void main(String[] args){
 		PriorityQueue<Character> letters = new PriorityQueue<>();
 				

@@ -12,13 +12,32 @@ import java.io.IOException;
  * number of bits a multiple of 8.
  * 
  * @author Marty Stepp, Stuart Reges, Helene Martin, and Owen Astrachan
- * @version 2012-03-01
+ * @version 2012-03-01 (JavaDoc updated Fall 2021 CS310 GMU)
  */
 public class BitInputStream extends InputStream {
+    /**
+     * Actual source to read from.
+     */
     private InputStream input;    // actual source to read from
+    
+    /**
+     * Buffer to build up next byte's digits <= 8.
+     */
     private int digits;           // buffer to build up next byte's digits <= 8
+
+    /**
+     * Number of digits are currently in buffer.
+     */
     private int numDigits;        // how many digits are currently in buffer
+
+    /**
+     * Boolean flag for output mode.
+     */
     private boolean bitMode;      // true if writing bits; false to debug ASCII
+
+    /**
+     * Stream to monitor for EOF.
+     */
     private BitOutputStream partner;  // another stream to monitor for EOF
 
     /**
@@ -50,8 +69,8 @@ public class BitInputStream extends InputStream {
      *                characters (bytes) at a time for debugging.
      * @throws BitIOException if the input stream cannot be accessed.
      * @throws NullPointerException if the given input or output stream is null.
-     * (The partner can be null; simply won't partner with any bit output stream
-     * in such a case.)
+     *         (The partner can be null; simply won't partner with any bit output stream
+     *         in such a case.)
      */
     public BitInputStream(InputStream input, BitOutputStream partner, boolean bitMode) {
         if (input == null) {
@@ -70,8 +89,8 @@ public class BitInputStream extends InputStream {
      * over) from this input stream without blocking by the next invocation of a
      * method for this input stream.
      * @return an estimate of the number of bytes that can be read (or skipped
-     * over) from this input stream without blocking, or 0 when it reaches the
-     * end of the input stream.
+     *         over) from this input stream without blocking, or 0 when it reaches the
+     *         end of the input stream.
      * @throws BitIOException if the input stream cannot be accessed.
      */
     @Override
@@ -221,7 +240,7 @@ public class BitInputStream extends InputStream {
                 break;
             }
             if (n != '\r') {
-            	// skip \r characters (Windows only) to improve platform-independence
+                // skip \r characters (Windows only) to improve platform-independence
                 line.append((char) n);
             }
         }
@@ -241,6 +260,7 @@ public class BitInputStream extends InputStream {
                 && System.getProperty("bitstream.bitmode") == null;
     }
 
+    /* removed : deprecated
     /**
      *  Called by Java when the program is shutting down;
      *  included to help ensure that the stream is closed.
@@ -250,6 +270,10 @@ public class BitInputStream extends InputStream {
     }*/
 
     // Refreshes the internal buffer with the next BYTE_SIZE bits.
+    /**
+     * Reads and returns the next byte.
+     * @return next byte from input
+     */
     private int readByte() {
         int result = digits;
         try {
@@ -265,6 +289,10 @@ public class BitInputStream extends InputStream {
     // students should not call this method.
     // This is a hack so that the input stream can detect the outputting
     // of a pseudo-EOF character to a partnered output stream.
+    /**
+     * Sets this bit input stream's "partner" output stream.
+     * @param partner stream used as partner" output stream.
+     */
     private void setPartner(BitOutputStream partner) {
         this.partner = partner;
     }

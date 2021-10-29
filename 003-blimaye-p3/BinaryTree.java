@@ -1,5 +1,9 @@
 import java.io.Serializable;
 
+/**
+ * Class represents an implementation of a Binary Tree.
+ * @author Brian Limaye
+ */
 public class BinaryTree implements Serializable {
 	
 	//-------------------------------------------------------------
@@ -7,9 +11,16 @@ public class BinaryTree implements Serializable {
 	//-------------------------------------------------------------
 	
 	//bad practice to have public inst. variables, but we want to test this...
-  	//Root of tree
-  	public TreeNode root;
+	//Root of tree
+	/**
+	 * The root of the current Binary Tree instance.
+	 */
+	public TreeNode root;
   	
+	/**
+	 * Sets the root for the current instance.
+	 * @param node The node to be set as the root.
+	 */
 	public void setRoot(TreeNode node){
 		this.root = node;
 	}
@@ -17,44 +28,78 @@ public class BinaryTree implements Serializable {
 	// END OF PROVIDED "DO NOT EDIT" SECTION 
 	//-------------------------------------------------------------
 
+	/**
+	 * Buffer used to store the walk print info temporarily.
+	 */
 	private StringBuilder orderedWalk = new StringBuilder();
 
-	private String printLevelInfo(TreeNode node) {
+	/**
+	 * Helper function to perform a level-order walk, while also counting the maximum height found.
+	 * @return Returns the String resembling the level-order traverse along with the maximum depth following between parentheses.
+	 */
+	private String printLevelInfo() {
 
+		/**
+		 * Class represents a basic Node.
+		 * @param <T> The generic type of Node.
+		 * @author Brian Limaye
+		 */
 		class Node<T> {
-
+			/**
+			 * The node value.
+			 */
 			T value;
+			/**
+			 * The node's next reference.
+			 */
 			Node<T> next;
 
+			/**
+			 * One argument constructor to set a node's value.
+			 * @param value The value to be set to the node.
+			 */
 			Node(T value) {
         		this.value = value;
         		this.next = null;
    			}
 
+			/**
+			 * Sets the next reference of the current node.
+			 * @param next The node to be set as the next reference.
+			 */
 			void setNext(Node<T> next) {
         		this.next = next;
     		}
-
-    		Node<T> getNext() {
-        		return this.next;
-    		}
-
-    		T getValue() {
-        		return value;
-    		}
 		}
 
+		/**
+		 * Class represents a basic Linked List.
+		 * @param <T> The generic type of each Node.
+		 * @author Brian Limaye
+		 */
 		class LinkedList<T> {
-
+			/**
+			 * The head of the Linked List.
+			 */
 			Node<T> head;
+			/**
+			 * The tail of the Linked List.
+			 */
 			Node<T> tail;
 
+			/**
+			 * Default constructor to initialize a new instance of a Linked List.
+			 */
 			LinkedList() {
 
 		        this.head = null;
 		        this.tail = null;
     		}
 
+			/**
+			 * Inserts a node into the Linked List to the tail.
+			 * @param newNode The new node to be appended.
+			 */
 			void insertLast(Node<T> newNode) {
 
 		        if (newNode == null) {
@@ -68,18 +113,21 @@ public class BinaryTree implements Serializable {
 		            return;
 		        }
 
-		        tail.setNext(newNode);
-		        newNode.setNext(null);
+		        tail.next = newNode;
+		        newNode.next = null;
 		        tail = newNode;
 		    }
 
+		    /**
+		     * Removes the first node from the Linked List, if possible.
+		     */
 		    void removeFirst() {
 
 		        if (head == null) {
 		            return;
 		        }
 
-		        head = head.getNext();
+		        head = head.next;
 		    }
 		}
 
@@ -96,20 +144,23 @@ public class BinaryTree implements Serializable {
 
 		while(queue.head != null) {
 
+			//Adds all children to the queue from the previous number of children.
 			for(int i = 0; i < prevNumChildren; i++) {
 
 				if(queue.head == null) {
 					break;
 				}
 
-				TreeNode curr = queue.head.getValue();
+				TreeNode curr = queue.head.value;
 
+				//Adds the node's left child to queue if non-null.
 				if(curr.left != null) {
 					
 					queue.insertLast(new Node<TreeNode>(curr.left));
 					++numChildrenLevel;
 				}
 
+				//Adds the node's right child to queue if non-null.
 				if(curr.right != null) {
 
 					queue.insertLast(new Node<TreeNode>(curr.right));
@@ -120,20 +171,28 @@ public class BinaryTree implements Serializable {
 				queue.removeFirst();
 			}
 
+			//Increments the number of levels if children were found on that level.
 			levelNo = (numChildrenLevel != 0) ? levelNo + 1 : levelNo;
 			prevNumChildren = numChildrenLevel;
 			numChildrenLevel = 0;
 		}
 		
-		return sb.toString() + "(" + levelNo + ")"; //default return: change or remove as needed
+		//Special custom String return consisting of the level-order traversal and maximum depth.
+		return sb.toString() + "(" + levelNo + ")";
 	}
 
+	/**
+	 * Recursive method to calculate the number of leaves from a starting node.
+	 * @param node The node to start from.
+	 * @return Returns the number of leaves from a given node.
+	 */
 	private int calculateNumLeaves(TreeNode node) {
 
 		if(node == null) {
 			return 0;
 		}
 
+		//When a leaf has been found.
 		if((node.left == null) && (node.right == null)) {
 			return 1;
 		}
@@ -141,6 +200,10 @@ public class BinaryTree implements Serializable {
 		return calculateNumLeaves(node.left) + calculateNumLeaves(node.right);
 	}
 
+	/**
+	 * Recursive method for the pre-order traversal from a starting node.
+	 * @param node The node to start from.
+	 */
 	private void preOrderWalk(TreeNode node) {
 
 		if(node == null) {
@@ -152,6 +215,10 @@ public class BinaryTree implements Serializable {
 		preOrderWalk(node.right);
 	}
 
+	/**
+	 * Recursive method for the in-order traversal from a starting node.
+	 * @param node The node to start from.
+	 */
 	private void inOrderWalk(TreeNode node) {
 
 		if(node == null) {
@@ -163,59 +230,49 @@ public class BinaryTree implements Serializable {
 		inOrderWalk(node.right);
 	}
 
+	/**
+	 * Parses the maximum height from the orderedWalk buffer.
+	 * @return Returns the maximum height from the root.
+	 */
 	public int height(){
-		// Return the height of the tree.
-		// Return -1 for a null tree
-		// 
-		// Hint: this is doable in _very_ few lines of code 
-		//       if you choose to use recursion.
-		//
-		// O(H): H as the tree height
-
+	
 		if(root == null) {
 			return -1;
 		}   
 
-		String path = printLevelInfo(root);
+		String path = printLevelInfo();
 
+		//Parses the path for opening and closing parentheses.
 		int indexOfParen = path.indexOf("(");
 		int indexOfClosing = path.indexOf(")");
 
+		//Case where no parentheses had found.
 		if((indexOfParen == -1) || (indexOfClosing == -1)) {
 			return -1;
 		}
 
+		//Parses the integer placed within the set of parentheses.
 		return Integer.parseInt(path.substring(indexOfParen + 1, indexOfClosing));
 	}
 	
-
+	/**
+	 * Calculates the number of leaves from the root node.
+	 * @return Returns the number of leaves from the root node.
+	 */
 	public int numLeaves(){
-		// Return the number of leaf nodes in the tree.
-		// Return zero for null trees.
-		// 
-		// Hint: this is doable in _very_ few lines of code 
-		//       if you choose to use recursion.
-		//
-		// O(N): N is the tree size
-
+	
 		if(root == null) {
 			return -1;
 		}
 
-		return calculateNumLeaves(root); //default return: change or remove as needed
+		return calculateNumLeaves(root);
 	}
 	
-	
+	/**
+	 * Performs a pre-order traversal starting at the root node.
+	 * @return Returns the pre-order traversal starting at the root.
+	 */
 	public String toStringPreOrder(){
-		// Return a string representation of the tree
-		// follow PRE-ORDER traversal to include all nodes.
-
-		// Return empty string "" for null trees.
-		// Use the toString() method of TreeNode class.
-		// Check main method below for examples.
-
-		// Hint: this is doable in _very_ few lines of code 
-		//       if you choose to use recursion.
 
 		if(root == null) {
 			return "";
@@ -225,21 +282,14 @@ public class BinaryTree implements Serializable {
 		String path = orderedWalk.toString();
 		orderedWalk.setLength(0);
 
-		return path; //default return: change or remove as needed
+		return path;
 	}
 	
-
+	/**
+	 * Performs a in-order traversal starting at the root node.
+	 * @return Returns the in-order traversal starting at the root.
+	 */
 	public String toStringInOrder(){
-		// Return a string representation of the tree
-		// follow IN-ORDER traversal to include all nodes.
-
-		// Return empty string "" for null trees.
-		// Use the toString() method of TreeNode class.
-		// Check main method below for examples.
-
-		// Hint: this is doable in _very_ few lines of code 
-		//       if you choose to use recursion.
-		//
 
 		if(root == null) {
 			return "";
@@ -250,38 +300,24 @@ public class BinaryTree implements Serializable {
 
 		orderedWalk.setLength(0);
 
-		return path; //default return: change or remove as needed
+		return path;
 	}
 	
-	
+	/**
+	 * Performs a level-order traversal starting at the root node.
+	 * @return Returns the level-order traversal starting at the root.
+	 */
 	public String toStringLevelOrder(){
-		// Return a string representation of the tree
-		// follow LEVEL-ORDER traversal to include all nodes.
 
-		// Return empty string "" for null trees.
-		// Use the toString() method of TreeNode class.
-		// Check main method below for examples.
-		
-		// Hint: Remember that you can create a local class 
-		// to help you with this!
+		String path = printLevelInfo();
 
-		// [Hint]Possible approach 1:
-		// It is easy to make a priority queue into a FIFO queue 
-		// if you think a little bit about it. Reuse your priority 
-		// queue here to do the level-order traversal. 
-		
-		// [Hint]Possible approach 2:
-		// It is also easy to reuse the linked list class from 
-		// Project 2 to implement a FIFO queue and help with the 
-		// level-order traversal.
-
-		String path = printLevelInfo(root);
 		int indexOfParen = path.indexOf("(");
 
 		if(indexOfParen == -1) {
 			return path;
 		}
 
+		//Parses the level-order traversal portion of the orderedWalk buffer.
 		return path.substring(0, indexOfParen);
 	}
 	
@@ -289,6 +325,10 @@ public class BinaryTree implements Serializable {
 	// Main Method For Your Testing -- Edit all you want
 	//-------------------------------------------------------------
 	
+	/**
+	 * Main method primarily used for testing the implementation of the Binary Tree.
+	 * @param args The command-line arguments used for testing functionality at run-time.
+	 */
 	public static void main(String[] args){
 	
 		BinaryTree tree = new BinaryTree();

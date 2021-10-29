@@ -1,5 +1,9 @@
 import java.io.*;
 
+/**
+ * Class represents a Huffman Tree implementation.
+ * @author Brian Limaye
+ */
 class Huffman implements Serializable{
 	// Note: We define this class (and a couple of other classes of 
 	// this project) as Serializable in order to be able to save 
@@ -14,49 +18,95 @@ class Huffman implements Serializable{
 	//-------------------------------------------------------------
 
 	//default length used to create hashtables
+	/**
+	 * Default length of HashTable.
+	 */
 	public static final int DEFAULT_TABLE_LENGTH = 11;
 	
 	//original input string to encode
+	/**
+	 * Contents of the input string.
+	 */
 	private transient String inputContents = null;
 	
 	//hashtable used to count the frequencies of input characters
+	/**
+	 * HashTable of characters, along with its number of occurrences.
+	 */
 	private transient HashTable<Character,Integer> counts = 
 		new HashTable<Character,Integer>(DEFAULT_TABLE_LENGTH);
 		
 	//priority queue used to build huffman tree
+	/**
+	 * Priority queue storing TreeNodes.
+	 */
 	private transient PriorityQueue<TreeNode> queue = new PriorityQueue<>();
 	
 	//huffman tree
+	/**
+	 * Huffman Tree representing a Binary Tree.
+	 */
 	private BinaryTree huffmanTree = new BinaryTree();
 	
 	//hashtable used to record the encoding for input characters
+	/**
+	 * Encodings used for validation purposes.
+	 */ 
 	private HashTable<Character,String> encodings = new HashTable<>(DEFAULT_TABLE_LENGTH);
 		
-	//setters and getters to help testing 	
+	//setters and getters to help testing
+	/**
+	 * Sets the counts HashTable.
+	 * @param counts The HashTable to be set.
+	 */ 	
 	public void setCounts(HashTable<Character, Integer> counts){
 		this.counts = counts;
 	}
 	
+	/**
+	 * Gets the counts HashTable.
+	 * @return Returns the counts HashTable.
+	 */
 	public HashTable<Character,Integer> getCounts(){
 		return counts;
 	}
 	
+	/**
+	 * Sets the queue.
+	 * @param queue The queue to be set.
+	 */
 	public void setQueue(PriorityQueue<TreeNode> queue){
 		this.queue = queue;
 	}
 
+	/**
+	 * Gets the queue.
+	 * @return Returns the queue.
+	 */
 	public PriorityQueue<TreeNode> getQueue(){
 		return queue;
 	}
 
+	/**
+	 * Sets the tree.
+	 * @param huffmanTree The tree to be set.
+	 */
 	public void setTree(BinaryTree huffmanTree){
 		this.huffmanTree = huffmanTree;
 	}
 
+	/**
+	 * Gets the tree.
+	 * @return Returns the huffmanTree.
+	 */
 	public BinaryTree getTree(){
 		return huffmanTree;
 	}
 
+	/**
+	 * Gets the encodings.
+	 * @return Returns the encodings.
+	 */
 	public HashTable<Character,String> getEncodings(){
 		return encodings;
 	}
@@ -65,11 +115,19 @@ class Huffman implements Serializable{
 	//generate the encoding result from the huffman tree
 	//if you have constructed a correct huffman tree, 
 	// this would work...
+	/**
+	 * Computes the encodings used for validation purposes.
+	 */
 	public void computeEncodings(){
 		computeEncodings(huffmanTree.root,"");
 	}
 
 	//recursive helper method for encoding
+	/**
+	 * Computes the encodings used for validation purposes, given a current location and encoding.
+	 * @param currentLoc The current TreeNode.
+	 * @param encoding The current encoding.
+	 */
 	private void computeEncodings(TreeNode currentLoc, String encoding){
 		if(currentLoc.character != null){
 			this.encodings.put(currentLoc.character, encoding);
@@ -83,6 +141,11 @@ class Huffman implements Serializable{
 	// Use the encoding hashtable to generate a string of 
 	// 0's and 1's as the encoding of the input.
 	// The input might have multiple characters.
+	/**
+	 * Encodes an inputted String with 1s and 0s.
+	 * @param input The input String to be encoded.
+	 * @return Returns the encoded String.
+	 */
 	public String encode(String input){
 
 		StringBuffer output = new StringBuffer();
@@ -96,6 +159,10 @@ class Huffman implements Serializable{
 	}
 
 	//After encodings are computed, encode inputContents
+	/**
+	 * Encodes the inputContents String literal with 1s and 0s.
+	 * @return Returns an encoded String based on inputContents.
+	 */
 	public String encode(){
 
 		StringBuffer output = new StringBuffer();
@@ -105,7 +172,7 @@ class Huffman implements Serializable{
 		}
 		
 		return output.toString();	
-	
+
 	}
 
 	//-------------------------------------------------------------
@@ -114,81 +181,131 @@ class Huffman implements Serializable{
 
 	// ADD MORE PRIVATE MEMBERS HERE IF NEEDED!
 
+	/**
+	 * Default constructor to initialize a new Huffman instance given an input String.
+	 * @param input The input String to be associated with the Huffman tree.
+	 */
 	public Huffman(String input){
-		//Constructor
-		
-		// Set inputContents to be input.
-		// Perform other initializations if needed.
-	
+		this.inputContents = input;
 	}
 	
+	/**
+	 * Step 1 of Huffman's algorithm to count the occurrences of each characters in inputContents.
+	 */
 	public void createCounts(){
-		//Step 1 of Huffman's algorithm:
-		// Count the number of occurrences of each character
-		// in inputContents; store the result in hashtable counts.
-				
-		// Always start with an empty hashtable.
 		
+		//Check for a non-set/empty inputContents.
+		if((inputContents == null) || (inputContents.length() == 0)) {
+			return;
+		}
+
+		for(int i = 0; i < inputContents.length(); i++) {
+
+			char currentChar = inputContents.charAt(i);
+			Integer numOccurrences = counts.get(currentChar);
+
+			//Case where a character has not been yet set into the HashTable.
+			if(numOccurrences == null) {
+				numOccurrences = 0;
+			}
+
+			//Case where a character has been found already.
+			counts.put(currentChar, ++numOccurrences);
+		}
 	}
 	
-	
+	/**
+	 * Step 2 of Huffman's algorithm to fill a queue of unique TreeNodes associated with the HashTable.
+	 */
 	public void initQueue(){
-		//Step 2 of Huffman's algorithm:
-		// For each character from inputContents, use the 
-		// frequency information from hashtable counts 
-		// (constructed in step 1) to create one leaf 
-		// TreeNode. Add the node into the priority queue.
 		
-		// Follow the original order of inputContents to 
-		// process characters and add nodes in one by one. 
-		// Make sure no duplicates are added into the priority 
-		// queue: only one node for each character.  
-		// Hint: use contains() of PriorityQueue class; or use
-		//  a separate HashTable to help you to avoid duplicates.
-				
-		// Always start with an empty priority queue.
-		
+		//Check for a non-set/empty inputContents.
+		if((inputContents == null) || (inputContents.length() == 0)) {
+			return;
+		}
+
+		for(int i = 0; i < inputContents.length(); i++) {
+
+			char currentChar = inputContents.charAt(i);
+			Integer numOccurrences = counts.get(currentChar);
+
+			//Prematurely intializes a TreeNode prior to enqueuing.
+			TreeNode currElement = new TreeNode(numOccurrences, currentChar);
+
+			//If not a duplicate, the TreeNode element is added to the queue.
+			if((numOccurrences != null) && (!queue.contains(currElement))) {
+				queue.add(currElement);
+			}
+		}	
 	}
 	
-		
+	/**
+	 * Step 3 of Huffman's algorithm to create a Huffman Tree from the queue of TreeNodes by merging children.
+	 */	
 	public void buildTree(){
-		//Step 3 of Huffman's algorithm:
-		// Starting form the priority queue initialized in Step 2, 
-		// merge nodes together into a single Huffman encoding tree.
+	
+		while(queue.size() > 1) {
 
-		// You can assume that the queue has at least two leaf 
-		// nodes to start.		
-		
-		// In each merging step, create a new node as the parent of two
-		// nodes removed from the priority queue. Make sure the first node 
-		// you get from the priority queue is the left child; the second node 
-		// from the priority queue is the right child.
+			TreeNode left = queue.remove();
+			TreeNode right = queue.remove();
 
+			//Merges properties of the left and right children nodes to create a parent node.
+			TreeNode mergedParent = new TreeNode(left.count + right.count, null);
+			mergedParent.setLeft(left);
+			mergedParent.setRight(right);
+
+			queue.add(mergedParent);
+		}
+
+		//Sets the huffman tree's root to be the final element in the queue.
+		huffmanTree.setRoot(queue.element());
 	}
 	
-
+	/**
+	 * Step 4 of Huffman's algorithm to decode an input String with a complete Huffman Tree.
+	 * @param input The input String of 1s and 0s to be decoded.
+	 * @return Returns the decoded result.
+	 */
 	public String decode(String input){
-		//Step 4 of Huffman's algorithm:
-		// Use the constructed Huffman tree from step 3 to decode 
-		// the input string of 1s and 0s. 
-		// The input string might contain the encodings of 
-		// more than one character.
+	
+		//Check for an invalid input String.
+		if((input == null) || (input.length() == 0)) {
+			return "";
+		}
+
+		StringBuilder sb = new StringBuilder();
+		TreeNode curr = huffmanTree.root;
+		char[] charSeq = input.toCharArray();
+
+		for(char c : charSeq) {
+
+			//Moves to the right child node if a 1.
+			if(c == '1') {
+				curr = curr.right;
+			}
+
+			//Moves to the left child node if a 0.
+			if(c == '0') {
+				curr = curr.left;
+			}
+
+			//Once a leaf is found, the current node is reset to the root while appending the character at that leaf.
+			if((curr.right == null) && (curr.left == null)) {
 				
-		//Hints:
-		//	(1) To break the string into a character array (char[]), use:
-		//		input.toCharArray()
-		//	(2) To get the numeric value of a character, use:
-		//		Character.getNumericValue(ch)
-		//	(3) Remember to start over at the root when you find a
-		//		valid character.
+				sb.append(curr.character);
+				curr = huffmanTree.root;
+			}
+		}
 
-		return ""; //default return: change or remove as needed
-
+		return sb.toString();
 	}
 
 	//-------------------------------------------------------------
 	// PROVIDED TESTING CODE: FEEL FREE TO EDIT
 	//-------------------------------------------------------------
+	/**
+	 * Method primarily used for testing the implementation of Huffman.
+	 */
 	public static void testMain(){
 	
 		Huffman huff = new Huffman("cabbeadcdcdcdbbd");
@@ -196,6 +313,7 @@ class Huffman implements Serializable{
 		//step 1: count frequency 
 		huff.createCounts();
 		HashTable<Character,Integer> counts = huff.getCounts();
+		System.out.println(counts);
 		//System.out.println(counts);
 		//System.out.println(counts.toStringDebug());
 
@@ -230,7 +348,6 @@ class Huffman implements Serializable{
 		
 		//step 4: encoding and decoding
 		huff.computeEncodings();
-		//System.out.println(huff.getEncodings());
 		if (huff.decode("1000101").equals("cab") && huff.encode("cab").equals("1000101")){
 			System.out.println("Yay 6");							
 		}
@@ -251,6 +368,10 @@ class Huffman implements Serializable{
 	// - To decode:  java Huffman -d fileToDecode decodedOutputFile HuffmanObjectInputFile
 	//--------------------------------------------------------------------------------
 
+	/**
+	 * Main method used for testing purposes.
+	 * @param args Command-line arguments used for testing functionality at run-time.
+	 */
 	public static void main(String[] args)
 	{
 		// no command-line args: provided testing of Huffman's algorithm
@@ -330,6 +451,12 @@ class Huffman implements Serializable{
 	}
 	
 	// output a Huffman Object to a file 
+	/**
+	 * Writes a Huffman Object to a file.
+	 * @param huff Huffman instance to use.
+	 * @param filename File to write to.
+	 * @throws IOException Thrown when the file cannot be written to/processed.
+	 */
 	public static void writeEncodedObject(Huffman huff, String filename) throws IOException{
 		try(ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(filename))){
 			output.writeObject(huff);
@@ -337,6 +464,12 @@ class Huffman implements Serializable{
 	}
 
 	// read from a file and create a Huffman Object based on the file contents
+	/**
+	 * Gets the encoded object from a file.
+	 * @param filename File to read from.
+	 * @return Returns the Huffman Object associated with the file.
+	 * @throws IOException Thrown when the file cannot be read from/processed.
+	 */
 	public static Huffman getEncodedObject(String filename) throws IOException{
 		try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(filename))){
 			return (Huffman)input.readObject();
@@ -347,6 +480,12 @@ class Huffman implements Serializable{
 	}
 	
 	// read the encoding result (as a string of 0's and 1's) from a file
+	/**
+	 * Gets the binary contents of a specific file.
+	 * @param filename File to read from.
+	 * @return Returns the binary contents of the file.
+	 * @throws IOException Thrown when the file cannot be read from/processed.
+	 */
 	public static String getFileBinaryContents(String filename) throws IOException{
 		StringBuffer fileContents = new StringBuffer();
 		try(BitInputStream bs = new BitInputStream(new FileInputStream(filename), true)){
@@ -358,14 +497,25 @@ class Huffman implements Serializable{
 	}
 
 	// output the encoding result (a string of 0's and 1's) as a bit sequence into a file
+	/**
+	 * Writes the encoding result to a specified file.
+	 * @param message The message to be output.
+	 * @param filename The file to be written to.
+	 * @throws IOException Thrown when the file cannot be written to/processed.
+	 */
 	public static void writeEncodedMessage(String message, String filename) throws IOException{
 		try(BitOutputStream bs = new BitOutputStream(new FileOutputStream(filename), true)){
 			bs.writeBits(message);
 		}
 	}
 
-	
 	//read from file and return file contents as a string
+	/**
+	 * Gets the file contents from a specified file.
+	 * @param filename The file to be read from.
+	 * @return Returns the contents from a specified file.
+	 * @throws IOException Thrown when the file cannot be read from/processed.
+	 */
 	public static String getFileContents(String filename) throws IOException{
 		StringBuffer fileContents = new StringBuffer();
 		try(BufferedReader br = new BufferedReader(new FileReader(filename))){
@@ -383,6 +533,12 @@ class Huffman implements Serializable{
 	}
 
 	// out put message as a sequence of bits to file
+	/**
+	 * Writes a decoded message to a specified file.
+	 * @param message The message to be written.
+	 * @param filename The file to be written to.
+	 * @throws IOException Thrown when the file cannot be written to/processed.
+	 */
 	public static void writeDecodedMessage(String message, String filename) throws IOException{
 		try(BufferedWriter br = new BufferedWriter(new FileWriter(filename))){
 			br.write(message);
@@ -392,6 +548,4 @@ class Huffman implements Serializable{
 	//-------------------------------------------------------------
 	// END OF PROVIDED "DO NOT EDIT" SECTION 
 	//-------------------------------------------------------------
-	
-
 }

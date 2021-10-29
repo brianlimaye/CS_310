@@ -13,11 +13,22 @@ import java.io.PrintStream;
  * number of bits a multiple of 8.
  * 
  * @author Marty Stepp, Stuart Reges, Helene Martin, and Owen Astrachan
- * @version 2012-03-02
+ * @version 2012-03-02 (JavaDoc updated Fall 2021 CS310 GMU)
  */
 public class BitOutputStream extends PrintStream {
+    /**
+     * Flag for debugging printings.
+     */
     public static final boolean DEBUG = false;   // set true for debug printlns
+    
+    /**
+     * Digits per byte.
+     */
     public static final int BYTE_SIZE = 8;       // digits per byte
+    
+    /**
+     * Character for end-of-file.
+     */
     public static final char EOF = (char) 256;   // character for end-of-file
     
     /**
@@ -47,12 +58,39 @@ public class BitOutputStream extends PrintStream {
     }
 
 
+    /**
+     * Actual Output target.
+     */
     private OutputStream output;  // actual target to write to
+
+    /**
+     * Flag for open for writing.
+     */
     private boolean open;         // true if still open for writing
+
+    /**
+     * Buffer to build up next byte's digits <= 8.
+     */
     private int digits;           // buffer to build up next byte's digits <= 8
+
+    /**
+     * How many digits are currently in buffer.
+     */
     private int numDigits;        // how many digits are currently in buffer
+
+    /**
+     * Flag for writing mode.
+     */
     private boolean bitMode;      // true if writing bits; false to debug ASCII
+
+    /**
+     * Flag for EOF.
+     */
     private boolean seenEOF;      // true if this output stream has written EOF
+
+    /**
+     * Bits to write at end of file to mark EOF.
+     */
     private String eofEncoding;   // bits to write at end of file to mark EOF
     
     /**
@@ -201,7 +239,7 @@ public class BitOutputStream extends PrintStream {
     
     /**
      * Prints the given Object to this output stream.
-     * @param c The Object to print.
+     * @param o The Object to print.
      */
     public void print(Object o) {
     	if (o instanceof Character) {
@@ -276,6 +314,7 @@ public class BitOutputStream extends PrintStream {
         }
     }
 
+    /* removed: deprecated
     /**
      * Runs when the object is garbage collected / program shuts down.
      * Included to ensure that the stream is closed.
@@ -291,15 +330,30 @@ public class BitOutputStream extends PrintStream {
     public static class BitIOException extends RuntimeException {
     	private static final long serialVersionUID = 0L;
     	
-    	
+    	/**
+    	 * Constructor w/ a message.
+    	 * @param message the detail message.
+    	 */   	
     	public BitIOException(String message) {
     		super(message);
     	}
     	
+    	/**
+    	 * Constructor w/ a throwable.
+    	 * @param cause the cause (which is saved for later retrieval by the 
+    	 *              Throwable.getCause() method)
+    	 */   	
     	public BitIOException(Throwable cause) {
     		super(cause);
     	}
     	
+    	/**
+    	 * Constructor w/ a message and a throwable.
+    	 * @param message the detail message.
+    	 * @param cause the cause (which is saved for later retrieval by the 
+    	 *              Throwable.getCause() method)
+    	 */   	
+
     	public BitIOException(String message, Throwable cause) {
     		super(message, cause);
     	}
