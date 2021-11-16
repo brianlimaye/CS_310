@@ -15,8 +15,6 @@ import org.apache.commons.collections15.Factory;
 
 import java.util.Collection;
 import java.util.ArrayList;
-import java.util.Arrays;
-
 
 class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<GraphNode,GraphEdge> {
 	//you may not have any other class variables, only this one
@@ -32,13 +30,15 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 
 	private boolean isCompletelyTrue(boolean[] visited) {
 
-		int numVertices = getVertices().size();
+		ArrayList<GraphNode> vertices = (ArrayList<GraphNode>) getVertices();
 
-		//System.out.println("Vertices: " + numVertices);
+		int numVertices = vertices.size();
 
 		for(int i = 0; i < numVertices; i++) {
 
-			if(!visited[i]) {
+			GraphNode curr = vertices.get(i);
+
+			if(!visited[curr.getId()]) {
 				return false;
 			}
 		}
@@ -584,6 +584,7 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 	
 	public static void main(String[] args) {
 		//create a set of nodes and edges to test with
+		
 		GraphNode[] nodes = {
 			new GraphNode(0), 
 			new GraphNode(1), 
@@ -635,10 +636,6 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 		
 		if(graph.toString().trim().equals("0 1 2 3 9 8 4 5 6 7")) {
 			System.out.println("Yay 3");
-		}
-
-		if(graph.getEndpoints(edges[0]) != null) {
-
 		}
 		
 		//lot more testing here...

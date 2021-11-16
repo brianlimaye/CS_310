@@ -11,10 +11,11 @@
 import java.util.Iterator;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
+import java.util.Arrays;
 
 //You may uncomment this to use it, or use your HashTable class
 //from Project 3.
-//import java.util.HashMap;
+import java.util.HashMap;
 
 /**
  * PriorityQueue class implemented via the binary heap.
@@ -78,7 +79,9 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 		System.out.println();
 		
 		Student bobby = new Student("G00000000", "Bobby");
-		q.update(bobby);
+		System.out.println(q.update(bobby));
+
+		//System.out.println(Arrays.toString(q.array));
 		
 		for(Student s : q) System.out.print(q.getIndex(s) + " "); //1 2
 		System.out.println();
@@ -87,6 +90,8 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 		
 		bobby.name = "Robert";
 		q.update(bobby);
+
+		//System.out.println(Arrays.toString(q.array));
 		
 		for(Student s : q) System.out.print(q.getIndex(s) + " "); //1 2
 		System.out.println();
@@ -97,25 +102,74 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 	}
 	
 	//Uncomment one of these lines depending on which hash table implementation you are using
-	//private HashMap<AnyType, Integer> indexMap; //if you're using the JCF hash table
+	protected HashMap<AnyType, Integer> indexMap; //if you're using the JCF hash table
 	//private HashTable<AnyType, Integer> indexMap; //if you're using project 3's hash table
 	
 	//you implement this
 	public int getIndex(AnyType x) {
 		//average case O(1)
+
+		if(x == null) {
+			return -1;
+		}
 		
+		Integer index = indexMap.get(x);
+
+		return (index != null) ? index : -1;
 		//returns the index of the item in the heap,
-		//or -1 if it isn't in the heap
-		
-		return -1;
+		//or -1 if it isn't in the heap		
 	}
 	
 	//you implement this
 	public boolean update(AnyType x) {
 		//O(lg n) average case
 		//or O(lg n) worst case if getIndex() is guarenteed O(1)
-		
-		return false; //dummy return, make sure to replace this!
+
+		if(x == null) {
+			return false;
+		}
+
+		boolean doesPercolateUp = true;
+		int index, cmpIndex;
+		int numUpdates = 0;
+
+		if((index = getIndex(x)) != -1) {
+
+			indexMap.put(x, index);
+			array[index] = x;
+
+			cmpIndex = index / 2;
+			AnyType child = array[index];
+			AnyType parent = array[cmpIndex];
+
+			doesPercolateUp = (cmp.compare(child, parent) < 0) ? true : false;
+
+			if(!doesPercolateUp) {
+
+				percolateDown(index);
+				return getIndex(x) != index;
+			}
+
+
+			while((cmpIndex > 0) && (cmp.compare(child, parent) < 0)) {
+
+				AnyType temp = array[index];
+				array[index] = array[cmpIndex];
+				array[cmpIndex] = temp;
+
+				indexMap.put(child, cmpIndex);
+				indexMap.put(parent, index);
+				++numUpdates;
+
+				index = cmpIndex;
+				cmpIndex = index / 2;
+
+				child = array[index];
+				parent = array[cmpIndex];
+			}
+		}
+
+		return (numUpdates > 0) ? true : false;
 	}
 	
 	/**
@@ -127,6 +181,7 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 		currentSize = 0;
 		cmp = null;
 		array = (AnyType[]) new Object[ DEFAULT_CAPACITY + 1 ];
+		indexMap = new HashMap<>();
 	}
 	
 	/**
@@ -138,6 +193,7 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 		currentSize = 0;
 		cmp = c;
 		array = (AnyType[]) new Object[ DEFAULT_CAPACITY + 1 ];
+		indexMap = new HashMap<>();
 	}
 	
 	 
@@ -155,6 +211,7 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 		for( AnyType item : coll )
 			array[ i++ ] = item;
 		buildHeap( );
+		indexMap = new HashMap<>();
 	}
 	
 	/**
@@ -175,7 +232,8 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 	 * @param x any object.
 	 * @return true.
 	 */
-	public boolean add( AnyType x )
+	   
+	public boolean add( AnyType x )				
 	{
 		if( currentSize + 1 == array.length )
 			doubleArray( );
@@ -185,10 +243,13 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 		array[ 0 ] = x;
 		
 		for( ; compare( x, array[ hole / 2 ] ) < 0; hole /= 2 ) {
+
 			array[ hole ] = array[ hole / 2 ];
+			indexMap.put(array[hole], hole);
 		}
 		
 		array[ hole ] = x;
+		indexMap.put(x, hole);
 		
 		return true;
 	}
@@ -208,6 +269,7 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 	public void clear( )
 	{
 		currentSize = 0;
+		indexMap.clear();
 	}
 	
 	/**
@@ -261,7 +323,9 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 	public AnyType remove( )
 	{
 		AnyType minItem = element( );
+		indexMap.remove(minItem);
 		array[ 1 ] = array[ currentSize-- ];
+
 		percolateDown( 1 );
 
 		return minItem;
@@ -281,7 +345,7 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 	private static final int DEFAULT_CAPACITY = 100;
 
 	private int currentSize;   // Number of elements in heap
-	private AnyType [ ] array; // The heap array
+	protected AnyType [ ] array; // The heap array
 	private Comparator<? super AnyType> cmp;
 
 	/**
@@ -300,12 +364,16 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 					compare( array[ child + 1 ], array[ child ] ) < 0 )
 				child++;
 			if( compare( array[ child ], tmp ) < 0 ) {
+
 				array[ hole ] = array[ child ];
+				indexMap.put(array[hole], hole);
 			}
 			else
 				break;
 		}
+
 		array[ hole ] = tmp;
+		indexMap.put(array[hole], hole);
 	}
 	
 	/**
