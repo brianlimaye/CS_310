@@ -1,42 +1,63 @@
-//TODO:
-//  (1) Update this code to meet the style and JavaDoc requirements.
-//			Why? So that you get experience with the code for a heap!
-//			Also, this happens a lot in industry (updating old code
-//			to meet your new standards). We've done this for you in
-//			WeissCollection and WeissAbstractCollection.
-//  (2) Implement getIndex() method and the related map integration
-//			 -- see project description
-//  (3) Implement update() method -- see project description
-
 import java.util.Iterator;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
-import java.util.Arrays;
-
-//You may uncomment this to use it, or use your HashTable class
-//from Project 3.
 import java.util.HashMap;
 
 /**
  * PriorityQueue class implemented via the binary heap.
  * From your textbook (Weiss)
+ * @param <T> The generic type of the queue.
+ * @author Mark Allen Weiss
+ * @author Brian Limaye
  */
-public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType>
+public class WeissPriorityQueue<T> extends WeissAbstractCollection<T>
 {
-	//--------------------------------------------------------
-	// testing code goes here... edit this as much as you want!
-	//--------------------------------------------------------
-	
+	/**
+	 * Main method used for testing functionality of WeissPriorityQueue.java.
+	 * @param args Command-line arguments used to test functionality at run-time.
+	 */
 	public static void main(String[] args) {
+		/**
+		 * Class represents a student at George Mason University.
+		 * @author Katherine (Raven) Russell
+		 */
 		class Student {
+			/**
+			 * G-Number of the student.
+			 */
 			String gnum;
+			/**
+			 * Name of the student.
+			 */
 			String name;
+
+			/**
+			 * Two-argument constructor to initialize a new Student instance.
+			 * @param gnum The G-Number to be set.
+			 * @param name The name to be set.
+			 */
 			Student(String gnum, String name) { this.gnum = gnum; this.name = name; }
+
+			/**
+			 * Overriden method to check equality among two potential Student instances.
+			 * @param o The object to be compared with the current Student instance.
+			 * @return Returns true if both instances are equal, false otherwise.
+			 */
 			public boolean equals(Object o) {
 				if(o instanceof Student) return this.gnum.equals(((Student)o).gnum);
 				return false;
 			}
+
+			/**
+			 * Gets the human interpreted representation of a Student instance.
+			 * @return Returns the human interpreted representation of a Student instance.
+			 */
 			public String toString() { return name + "(" + gnum + ")"; }
+
+			/**
+			 * Computes the hashcode for the current Student instance.
+			 * @return Returns the hashcode of the current Student instance.
+			 */
 			public int hashCode() { return gnum.hashCode(); }
 		}
 		
@@ -101,12 +122,17 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 		//you'll need more testing...
 	}
 	
-	//Uncomment one of these lines depending on which hash table implementation you are using
-	protected HashMap<AnyType, Integer> indexMap; //if you're using the JCF hash table
-	//private HashTable<AnyType, Integer> indexMap; //if you're using project 3's hash table
+	/**
+	 * HashMap used to track elements on the heap with their corresponding indices.
+	 */
+	protected HashMap<T, Integer> indexMap;
 	
-	//you implement this
-	public int getIndex(AnyType x) {
+	/**
+	 * Gets the corresponding index of an element on the heap, if found.
+	 * @param x The element to be searched.
+	 * @return Returns the index corresponding to the element.
+	 */
+	public int getIndex(T x) {
 		//average case O(1)
 
 		if(x == null) {
@@ -115,13 +141,16 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 		
 		Integer index = indexMap.get(x);
 
-		return (index != null) ? index : -1;
-		//returns the index of the item in the heap,
-		//or -1 if it isn't in the heap		
+		//Returns the index of x, or -1 if not found.
+		return (index != null) ? index : -1;	
 	}
 	
-	//you implement this
-	public boolean update(AnyType x) {
+	/**
+	 * Attempts to update an element on the heap, changing its corresponding index, if possible.
+	 * @param x The element to be updated.
+	 * @return Returns true if the element has been successfuly updated, false otherwise.
+	 */
+	public boolean update(T x) {
 		//O(lg n) average case
 		//or O(lg n) worst case if getIndex() is guarenteed O(1)
 
@@ -129,20 +158,25 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 			return false;
 		}
 
+		//Flag indicating whether the element must percolate down/up when changing indices.
 		boolean doesPercolateUp = true;
 		int index, cmpIndex;
 		int numUpdates = 0;
 
 		if((index = getIndex(x)) != -1) {
 
+			//Stores the new/updated element in the heap/HashMap. 
 			indexMap.put(x, index);
 			array[index] = x;
 
 			cmpIndex = index / 2;
-			AnyType child = array[index];
-			AnyType parent = array[cmpIndex];
 
-			doesPercolateUp = (cmp.compare(child, parent) < 0) ? true : false;
+			//Gets the child and parent elements, in a percolating up algorithm.
+			T child = array[index];
+			T parent = array[cmpIndex];
+
+			//Determines whether the element must percolated up or down. 
+			doesPercolateUp = (compare(child, parent) < 0) ? true : false;
 
 			if(!doesPercolateUp) {
 
@@ -150,13 +184,14 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 				return getIndex(x) != index;
 			}
 
+			while((cmpIndex > 0) && (compare(child, parent) < 0)) {
 
-			while((cmpIndex > 0) && (cmp.compare(child, parent) < 0)) {
-
-				AnyType temp = array[index];
+				//Swaps the child and parent, in the case where child has a lower value than parent.
+				T temp = array[index];
 				array[index] = array[cmpIndex];
 				array[cmpIndex] = temp;
 
+				//Updates the new child and parent, along with their corresponding indices.
 				indexMap.put(child, cmpIndex);
 				indexMap.put(parent, index);
 				++numUpdates;
@@ -180,46 +215,50 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 	{
 		currentSize = 0;
 		cmp = null;
-		array = (AnyType[]) new Object[ DEFAULT_CAPACITY + 1 ];
+		array = (T[]) new Object[ DEFAULT_CAPACITY + 1 ];
 		indexMap = new HashMap<>();
 	}
 	
 	/**
-	 * Construct an empty PriorityQueue with a specified comparator.
+	 * One-argument constructor to create an empty PriorityQueue with a specified comparator.
+	 * @param c User-defined comparator used to check equality between two Objects.
 	 */
 	@SuppressWarnings("unchecked")
-	public WeissPriorityQueue( Comparator<? super AnyType> c )
+	public WeissPriorityQueue( Comparator<? super T> c )
 	{
 		currentSize = 0;
 		cmp = c;
-		array = (AnyType[]) new Object[ DEFAULT_CAPACITY + 1 ];
+		array = (T[]) new Object[ DEFAULT_CAPACITY + 1 ];
 		indexMap = new HashMap<>();
 	}
 	
 	 
 	/**
-	 * Construct a PriorityQueue from another Collection.
+	 * One-argument constructor to create a PriorityQueue from another Collection.
+	 * @param coll Another WeissCollection instance to be based upon, in regards to the current heap.
 	 */
 	@SuppressWarnings("unchecked")
-	public WeissPriorityQueue( WeissCollection<? extends AnyType> coll )
+	public WeissPriorityQueue( WeissCollection<? extends T> coll )
 	{
 		cmp = null;
 		currentSize = coll.size( );
-		array = (AnyType[]) new Object[ ( currentSize + 2 ) * 11 / 10 ];
+		array = (T[]) new Object[ ( currentSize + 2 ) * 11 / 10 ];
 		
 		int i = 1;
-		for( AnyType item : coll )
+		for( T item : coll )
 			array[ i++ ] = item;
 		buildHeap( );
 		indexMap = new HashMap<>();
 	}
 	
 	/**
-	 * Compares lhs and rhs using comparator if
-	 * provided by cmp, or the default comparator.
+	 * Compares lhs and rhs using comparator.
+	 * @param lhs The first generic object to be checked in a comparison.
+	 * @param rhs The second generic object to be checked in a comparison.
+	 * @return Returns greater than 0 if lhs is greater than rhs, less than 0 if lhs is less than rhs. 0 otherwise.
 	 */
 	@SuppressWarnings("unchecked")
-	private int compare( AnyType lhs, AnyType rhs )
+	private int compare( T lhs, T rhs )
 	{
 		if( cmp == null )
 			return ((Comparable)lhs).compareTo( rhs );
@@ -233,7 +272,7 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 	 * @return true.
 	 */
 	   
-	public boolean add( AnyType x )				
+	public boolean add( T x )				
 	{
 		if( currentSize + 1 == array.length )
 			doubleArray( );
@@ -274,11 +313,11 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 	
 	/**
 	 * Returns an iterator over the elements in this PriorityQueue.
-	 * The iterator does not view the elements in any particular order.
+	 * @return Returns an iterator over the elements in this PriorityQueue.
 	 */
-	public Iterator<AnyType> iterator( )
+	public Iterator<T> iterator( )
 	{
-		return new Iterator<AnyType>( )
+		return new Iterator<T>( )
 		{
 			int current = 0;
 			
@@ -288,7 +327,7 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 			}
 			
 			@SuppressWarnings("unchecked")
-			public AnyType next( )
+			public T next( )
 			{
 				if( hasNext( ) )
 					return array[ ++current ];
@@ -308,7 +347,7 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 	 * @return the smallest item.
 	 * @throws NoSuchElementException if empty.
 	 */
-	public AnyType element( )
+	public T element( )
 	{
 		if( isEmpty( ) )
 			throw new NoSuchElementException( );
@@ -320,9 +359,9 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 	 * @return the smallest item.
 	 * @throws NoSuchElementException if empty.
 	 */
-	public AnyType remove( )
+	public T remove( )
 	{
-		AnyType minItem = element( );
+		T minItem = element( );
 		indexMap.remove(minItem);
 		array[ 1 ] = array[ currentSize-- ];
 
@@ -342,11 +381,23 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 			percolateDown( i );
 	}
 
+	/**
+	 * Default capacity.
+	 */
 	private static final int DEFAULT_CAPACITY = 100;
 
+	/**
+	 * Current size of the heap.
+	 */
 	private int currentSize;   // Number of elements in heap
-	protected AnyType [ ] array; // The heap array
-	private Comparator<? super AnyType> cmp;
+	/**
+	 * The heap represented by an array.
+	 */
+	protected T [ ] array; // The heap array
+	/**
+	 * A comparator used to compare two generic objects.
+	 */
+	private Comparator<? super T> cmp;
 
 	/**
 	 * Internal method to percolate down in the heap.
@@ -355,7 +406,7 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 	private void percolateDown( int hole )
 	{
 		int child;
-		AnyType tmp = array[ hole ];
+		T tmp = array[ hole ];
 
 		for( ; hole * 2 <= currentSize; hole = child )
 		{
@@ -382,9 +433,9 @@ public class WeissPriorityQueue<AnyType> extends WeissAbstractCollection<AnyType
 	@SuppressWarnings("unchecked")
 	private void doubleArray( )
 	{
-		AnyType [ ] newArray;
+		T [ ] newArray;
 
-		newArray = (AnyType []) new Object[ array.length * 2 ];
+		newArray = (T []) new Object[ array.length * 2 ];
 		for( int i = 0; i < array.length; i++ )
 			newArray[ i ] = array[ i ];
 		array = newArray;

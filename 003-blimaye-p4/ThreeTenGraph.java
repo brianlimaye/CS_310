@@ -1,10 +1,3 @@
-//TODO:
-//  (1) Implement the graph!
-//  (2) Update this code to meet the style and JavaDoc requirements.
-//			Why? So that you get experience with the code for a graph!
-//			Also, this happens a lot in industry (updating old code
-//			to meet your new standards).
-
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedGraph;
 
@@ -16,27 +9,34 @@ import org.apache.commons.collections15.Factory;
 import java.util.Collection;
 import java.util.ArrayList;
 
+
+/**
+ * Class represents a graph or a collection of vertices and edges.
+ * @author Katherine (Raven) Russell 
+ * @author Brian Limaye
+ */
 class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<GraphNode,GraphEdge> {
-	//you may not have any other class variables, only this one
-	//if you make more class variables your graph class will receive a 0,
-	//no matter how well it works
+	
+	/**
+	 * Max number of nodes/vertices.
+	 */
 	private static final int MAX_NUMBER_OF_NODES = 200;
 	
-	
-	//you may not have any other instance variables, only this one
-	//if you make more instance variables your graph class will receive a 0,
-	//no matter how well it works
+	/**
+	 * Adjacency matrix responsible for keeping track of vertices and connected edges.
+	 */
 	private GraphComp[][] storage = null;
 
+	/**
+	 * Helper method to check if all vertices have been visited in a DFT.
+	 * @param visited Array representing whether a certain vertex has been visited or not.
+	 * @return Returns true if all vertices have been visited, false otherwise.
+	 */
 	private boolean isCompletelyTrue(boolean[] visited) {
 
-		ArrayList<GraphNode> vertices = (ArrayList<GraphNode>) getVertices();
+		Collection<GraphNode> vertices = getVertices();
 
-		int numVertices = vertices.size();
-
-		for(int i = 0; i < numVertices; i++) {
-
-			GraphNode curr = vertices.get(i);
+		for(GraphNode curr: vertices) {
 
 			if(!visited[curr.getId()]) {
 				return false;
@@ -46,13 +46,20 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 		return true;
 	}
 
+	/**
+	 * Helper method to find the lowest ID vertex that hasn't been visited yet.
+	 * @param visited Array representing whether a certain vertex has been visited or not.
+	 * @return Returns the lowest ID vertex, if any.
+	 */
 	private GraphNode findLowestID(boolean[] visited) {
 
+		//Default value for minimum ID.
 		int minId = Integer.MAX_VALUE;
 		GraphNode min = null;
 
 		for(int i = 0; i < storage.length; i++) {
 
+			//Verification that the vertex exists and has not been visited, prior to comparison.
 			if((storage[i][i] != null) && (!visited[i])) {
 
 				int currId = storage[i][i].getId();
@@ -68,21 +75,24 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 		return min;
 	}
 
+	/**
+	 * Helper recursive function to perform the DFT in an overloaded fashion to keep track of the path.
+	 * @param curr The current GraphNode.
+	 * @param visited Array representing whether a certain vertex has been visited or not.
+	 * @param restart Flag indicating whether the algorithm must restart at the lowest ID vertex or not.
+	 * @param path The current path of the traversal.
+	 * @return Returns the final path of the DPT.
+	 */
 	private String depthFirstTraversal(GraphNode curr, boolean[] visited, boolean restart, StringBuilder path) {
-		//The next line triggers some things in the automatic tester.
-		//If you write a _recursive_ helper method, you should copy
-		//this line to that method (just put it as the first line in
-		//the helper function).
+		
 		RecursionCheck.hasRecursion(); //DO NOT REMOVE THIS LINE
-		
-		//This method is required to be recursive.
-		
-		//O(n^2) where n is the max number of vertices in the graph
 
+		//Base Case 1: When all vertices have been visited, indicating completion.
 		if(isCompletelyTrue(visited)) {
 			return path.toString();
 		}
 
+		//Case where a restart must occur.
 		if((restart) && (curr == null)) {
 			depthFirstTraversal(findLowestID(visited), visited, false, path);
 		}
@@ -91,15 +101,16 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 			return depthFirstTraversal(null, visited, true, path);
 		}
 
+		//Updates the current path at the given vertex.
 		int id = curr.getId();
 		path.append(id + " ");
 		visited[id] = true;
 
-		ArrayList<GraphNode> neighbors = (ArrayList<GraphNode>) getNeighbors(curr);
+		Collection<GraphNode> neighbors = getNeighbors(curr);
 
-		for(int i = 0; i < neighbors.size(); i++) {
+		//Moves to the neighbor vertex that has not been visited yet, if possible.
+		for(GraphNode currNeigh: neighbors) {
 
-			GraphNode currNeigh = neighbors.get(i);
 			int currId = currNeigh.getId();
 
 			if(!visited[currId]) {
@@ -110,7 +121,9 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 		return "";
 	}
 	
-	//this is the only allowed constructor
+	/**
+	 * Default constructor to initialize a new instance of ThreeTenGraph with an adjacency matrix of max size.
+	 */
 	public ThreeTenGraph() {
 		this.storage = new GraphComp[MAX_NUMBER_OF_NODES][MAX_NUMBER_OF_NODES];
 	}
@@ -122,10 +135,6 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * @return a Collection view of all edges in this graph
      */
     public Collection<GraphEdge> getEdges() {
-		//O(n^2) amortized where n is the max number of vertices in the graph
-		
-		//Hint: this method returns a Collection, look at the imports for
-		//what collections you could return here.
 
 		Collection<GraphEdge> edges = new ArrayList<>();
 
@@ -133,7 +142,8 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 
 			for(int j = 0; j < storage[i].length; j++) {
 
-				if((storage[i][j] != null) && (storage[i][j] instanceof GraphEdge)) {
+				//Ensures the edge is real/non-null prior to adding.
+				if(storage[i][j] instanceof GraphEdge) {
 					edges.add((GraphEdge) storage[i][j]);
 				}
 			}
@@ -149,16 +159,13 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * @return a Collection view of all vertices in this graph
      */
     public Collection<GraphNode> getVertices() {
-		//O(n) amortized where n is the max number of vertices in the graph
-		
-		//Hint: this method returns a Collection, look at the imports for
-		//what collections you could return here.
 
 		Collection<GraphNode> vertices = new ArrayList<>();
 
 		for(int i = 0; i < storage.length; i++) {
 
-			if((storage[i][i] != null) && (storage[i][i] instanceof GraphNode)) {
+			//Ensures the vertex is real/non-null prior to adding.
+			if(storage[i][i] instanceof GraphNode) {
 				vertices.add((GraphNode) storage[i][i]);
 			}
 		}
@@ -171,14 +178,13 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * @return the number of edges in this graph
      */
     public int getEdgeCount() {
-
-		//O(n^2) where n is the max number of vertices in the graph
 		
 		int numEdges = 0;
 
 		for(int i = 0; i < storage.length; i++) {
 
 			for(int j = 0; j < storage[i].length; j++) {
+				//Increments the number of edges if the element in the adjacency matrix is only a GraphEdge instance.
 				numEdges = (storage[i][j] instanceof GraphEdge) ? numEdges + 1: numEdges;
 			}
 		}
@@ -192,10 +198,10 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      */
     public int getVertexCount() {
 
-		//O(n) where n is the max number of vertices in the graph
 		int numVertices = 0;
 
 		for(int i = 0; i < storage.length; i++) {
+			//Increments the number of vertices if the element in the adjacency matrix is only a GraphNode instance.
 			numVertices = (storage[i][i] instanceof GraphNode) ? numVertices + 1: numVertices;
 		}
 
@@ -209,7 +215,6 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * @return true iff this graph contains a vertex vertex
      */
     public boolean containsVertex(GraphNode vertex) {
-		//O(1)
 
 		if(vertex == null) {
 			return false;
@@ -217,6 +222,7 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 		
 		int id = vertex.getId();
 
+		//Check to ensure that the corresponding position for the vertex in the adjacency matrix is non-null.
 		return storage[id][id] != null;
 	}
     
@@ -227,11 +233,9 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * it will be included in the collection returned.
      * 
      * @param vertex the vertex whose neighbors are to be returned
-     * @return  the collection of vertices which are connected to vertex, 
-     * or null if vertex is not present
+     * @return  the collection of vertices which are connected to vertex, or null if vertex is not present
      */
     public Collection<GraphNode> getNeighbors(GraphNode vertex) {
-		//O(n) amortized where n is the max number of vertices in the graph
 
 		if(vertex == null) {
 			return null;
@@ -242,7 +246,8 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 
 		for(int i = 0; i < storage[id].length; i++) {
 
-			if((storage[id][i] != null) && (storage[id][i] instanceof GraphEdge)) {
+			//Ensures the neighbor is real/non-null prior to adding.
+			if(storage[id][i] instanceof GraphEdge) {
 				neighbors.add((GraphNode) storage[i][i]);
 			}
 		}
@@ -260,7 +265,6 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * @return the number of neighboring vertices
      */
     public int getNeighborCount(GraphNode vertex) {
-		//O(n) where n is the max number of vertices in the graph
 
 		if(vertex == null) {
 			return 0;
@@ -273,11 +277,9 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * Returns the collection of edges in this graph which are connected to vertex.
      * 
      * @param vertex the vertex whose incident edges are to be returned
-     * @return  the collection of edges which are connected to vertex, 
-     * or null if vertex is not present
+     * @return  the collection of edges which are connected to vertex, or null if vertex is not present
      */
     public Collection<GraphEdge> getIncidentEdges(GraphNode vertex) {
-		//O(n) amortized where n is the max number of vertices in the graph
 
 		if(vertex == null) {
 			return null;
@@ -285,6 +287,7 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 
 		int id = vertex.getId();
 
+		//Check for a vertex that has not been added to the adjacency matrix.
 		if(storage[id][id] == null) {
 			return null;
 		}
@@ -293,7 +296,8 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 
 		for(int i = 0; i < storage[id].length; i++) {
 
-			if((storage[id][i] != null) && (storage[id][i] instanceof GraphEdge)) {
+			//Ensures the edge is real/non-null prior to adding it as an incident edge.
+			if(storage[id][i] instanceof GraphEdge) {
 				incEdges.add((GraphEdge) storage[id][i]);
 			}
 		}
@@ -301,12 +305,11 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 		return incEdges;
 	}
     /**
-     * Returns the endpoints of edge as a Pair<GraphNode>.
+     * Returns the endpoints of edge as a Pair< GraphNode >.
      * @param edge the edge whose endpoints are to be returned
      * @return the endpoints (incident vertices) of edge
      */
     public Pair<GraphNode> getEndpoints(GraphEdge edge) {
-		//O(n^2) where n is the max number of vertices in the graph
 
 		if(edge == null) {
 			return null;
@@ -318,7 +321,8 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 
 			for(int j = 0; j < storage[i].length; j++) {
 
-				if((storage[i][j] != null) && (storage[i][j] instanceof GraphEdge) && (edge.equals(storage[i][j]))) {
+				//Ensures the edge is real/non-null prior to extracting its endpoints.
+				if((storage[i][j] instanceof GraphEdge) && (edge.equals(storage[i][j]))) {
 
 					GraphNode pointOne = (GraphNode) storage[j][j];
 					GraphNode pointTwo = (GraphNode) storage[i][i];
@@ -329,7 +333,6 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 		}
 		
 		return endpoints;
-
 	}
 
     /**
@@ -344,18 +347,18 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * <li/>v1 is not connected to v2
      * <li/>either v1 or v2 are not present in this graph
      * </ul> 
+     * 
      * <p><b>Note</b>: for purposes of this method, v1 is only considered to be connected to
      * v2 via a given <i>directed</i> edge e if
      * v1 == e.getSource() && v2 == e.getDest() evaluates to true.
      * (v1 and v2 are connected by an undirected edge u if 
      * u is incident to both v1 and v2.)
-     * 
-     * @return  an edge that connects v1 to v2, 
-     * or null if no such edge exists (or either vertex is not present)
+     * @param v1 The first vertex.
+     * @param v2 The second vertex.
+     * @return  an edge that connects v1 to v2, or null if no such edge exists (or either vertex is not present)
      * @see Hypergraph#findEdgeSet(Object, Object) 
      */
     public GraphEdge findEdge(GraphNode v1, GraphNode v2) {
-		//O(1)
 
 		if((v1 == null) || (v2 == null)) {
 			return null;
@@ -364,10 +367,12 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 		int idOne = v1.getId();
 		int idTwo = v2.getId();
 
+		//Checks if v1 and/or v2 have not yet been added to the adjacency matrix.
 		if((storage[idOne][idOne] == null) || (storage[idTwo][idTwo] == null)) {
 			return null;
 		}
 
+		//Checks to see if there are not any incident edges that connects the two vertices.
 		if((storage[idOne][idTwo] == null) && (storage[idTwo][idOne] == null)) {
 			return null;
 		}
@@ -380,13 +385,11 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * are incident to each other.
      * Equivalent to getIncidentEdges(vertex).contains(edge) and to
      * getIncidentVertices(edge).contains(vertex).
-     * @param vertex
-     * @param edge
-     * @return true if vertex and edge 
-     * are incident to each other
+     * @param vertex The vertex to be used.
+     * @param edge  The edge used to be determined whether or not it's an incident edge to vertex.
+     * @return true if vertex and edge are incident to each other
      */
     public boolean isIncident(GraphNode vertex, GraphEdge edge) {
-		//O(n) where n is the max number of vertices in the graph
 
 		if((vertex == null) || (edge == null)) {
 			return false;
@@ -398,7 +401,7 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
     /**
      * Adds edge e to this graph such that it connects 
      * vertex v1 to v2.
-     * Equivalent to addEdge(e, new Pair<GraphNode>(v1, v2)).
+     * Equivalent to addEdge(e, new Pair< GraphNode >(v1, v2)).
      * If this graph does not contain v1, v2, 
      * or both, implementations may choose to either silently add 
      * the vertices to the graph or throw an IllegalArgumentException.
@@ -414,9 +417,7 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * @see #addEdge(Object, Object, Object, EdgeType)
      */
     public boolean addEdge(GraphEdge e, GraphNode v1, GraphNode v2) {
-		//O(n^2) where n is the max number of vertices in the graph
 
-		
 		if((e == null) || (v1 == null) || (v2 == null)) {
 			throw new IllegalArgumentException();
 		}
@@ -424,6 +425,7 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 		int idOne = v1.getId();
 		int idTwo = v2.getId();
 
+		//Check to see if v1 and/or v2 is null in the adjacency matrix.
 		if((storage[idOne][idOne] == null) || (storage[idTwo][idTwo] == null)) {
 			throw new IllegalArgumentException("Vertices not found...");
 		}
@@ -432,12 +434,14 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 
 			for(int j = 0; j < storage[i].length; j++) {
 
-				if((storage[i][j] != null) && (storage[i][j] instanceof GraphEdge) && (storage[i][j].equals(e))) {
+				//Check to see if e has already been added to the adjacency matrix.
+				if((storage[i][j] instanceof GraphEdge) && (storage[i][j].equals(e))) {
 					throw new IllegalArgumentException();
 				}
 			}
 		}
 
+		//Sets the edge, connecting the vertices v1 and v2.
 		storage[idOne][idTwo] = e;
 		storage[idTwo][idOne] = e;
 		
@@ -453,7 +457,6 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * @throws IllegalArgumentException if vertex is null
      */
     public boolean addVertex(GraphNode vertex) {
-		//O(1)
 		
 		if(vertex == null) {
 			throw new IllegalArgumentException();
@@ -461,10 +464,12 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 		
 		int vid = vertex.getId();
 
+		//Check to see if vertex has already been added previously.
 		if(storage[vid][vid] != null) {
 			return false;
 		}
 
+		//Sets the vertex into the adjacency matrix.
 		storage[vid][vid] = vertex;
 		return true;
 	}
@@ -477,7 +482,6 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * @return true if the removal is successful, false otherwise
      */
     public boolean removeEdge(GraphEdge edge) {
-		//O(n^2) where n is the max number of vertices in the graph
 
 		if(edge == null) {
 			return false;
@@ -487,8 +491,9 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 
 			for(int j = 0; j < storage[i].length; j++) {
 
-				if((storage[i][j] != null) && (storage[i][j] instanceof GraphEdge) && (edge.equals(storage[i][j]))) {
+				if((storage[i][j] instanceof GraphEdge) && (edge.equals(storage[i][j]))) {
 
+					//Removes the incident edges stored in the adjacency matrix when edge is found.
 					storage[i][j] = null;
 					storage[j][i] = null;
 					return true;
@@ -516,7 +521,6 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * @return true if the removal is successful, false otherwise
      */
     public boolean removeVertex(GraphNode vertex) {
-		//O(n) where n is the max number of vertices in the graph
 
 		if((vertex == null) || (!containsVertex(vertex))){
 			return false;
@@ -527,7 +531,8 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 
 		for(int i = 0; i < storage.length; i++) {
 
-			if((storage[i][i] != null) && (storage[i][i] instanceof GraphNode) && (storage[i][i].equals(vertex))) {
+			//Check if the vertex has been found in the adjacency matrix.
+			if((storage[i][i] instanceof GraphNode) && (storage[i][i].equals(vertex))) {
 
 				found = true;
 				index = i;
@@ -535,19 +540,21 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 			}
 		}
 
+		//Case where the vertex was not found in the graph.
 		if(!found) {
 			return false;
 		}
 
 		Collection<GraphEdge> incidentEdges = getIncidentEdges(vertex);
 
+		//Removes all associated incident edges with the vertex.
 		for(GraphEdge incEdge: incidentEdges) {
 			removeEdge(incEdge);
 		}
 
+		//Removes the vertex from the adjacency matrix.
 		storage[index][index] = null;
 		return true;
-
 	}
 	
 	/**
@@ -565,15 +572,8 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 	 *  @return a string representation of the depth first traversal, or an empty string if the graph is empty
 	 */
 	public String depthFirstTraversal(GraphNode curr, boolean[] visited, boolean restart) {
-		//The next line triggers some things in the automatic tester.
-		//If you write a _recursive_ helper method, you should copy
-		//this line to that method (just put it as the first line in
-		//the helper function).
+	
 		RecursionCheck.hasRecursion(); //DO NOT REMOVE THIS LINE
-		
-		//This method is required to be recursive.
-		
-		//O(n^2) where n is the max number of vertices in the graph
 
 		return depthFirstTraversal(curr, visited, restart, new StringBuilder());
 	}
@@ -582,8 +582,11 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 	//   testing code goes here... edit this as much as you want!
 	//********************************************************************************
 	
+	/**
+	 * Main method primarily used for basic testing of the implementation of ThreeTenGraph.java.
+	 * @param args Command-line arguments used to dynamically test the functionality at run-time.
+	 */
 	public static void main(String[] args) {
-		//create a set of nodes and edges to test with
 		
 		GraphNode[] nodes = {
 			new GraphNode(0), 
@@ -646,9 +649,9 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 		//used by the layout class.
 	}
 	
-	//********************************************************************************
-	//   YOU MAY, BUT DON'T NEED TO EDIT THINGS IN THIS SECTION
-	//********************************************************************************
+    //********************************************************************************
+    //   YOU MAY, BUT DON'T NEED TO EDIT THINGS IN THIS SECTION
+    //********************************************************************************
 
     /**
      * Returns true if v1 and v2 share an incident edge.
@@ -673,26 +676,25 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 	}
     
     /**
-     * Returns the collection of edges in this graph which are of type edge_type.
-     * @param edge_type the type of edges to be returned
-     * @return the collection of edges which are of type edge_type, or
-     * null if the graph does not accept edges of this type
+     * Returns the collection of edges in this graph which are of type edgeType.
+     * @param edgeType the type of edges to be returned
+     * @return the collection of edges which are of type edgeType, or null if the graph does not accept edges of this type.
      * @see EdgeType
      */
-    public Collection<GraphEdge> getEdges(EdgeType edge_type) {
-		if(edge_type == EdgeType.UNDIRECTED) {
+    public Collection<GraphEdge> getEdges(EdgeType edgeType) {
+		if(edgeType == EdgeType.UNDIRECTED) {
 			return getEdges();
 		}
 		return null;
 	}
 
     /**
-     * Returns the number of edges of type edge_type in this graph.
-     * @param edge_type the type of edge for which the count is to be returned
-     * @return the number of edges of type edge_type in this graph
+     * Returns the number of edges of type edgeType in this graph.
+     * @param edgeType the type of edge for which the count is to be returned
+     * @return the number of edges of type edgeType in this graph
      */
-    public int getEdgeCount(EdgeType edge_type) {
-		if(edge_type == EdgeType.UNDIRECTED) {
+    public int getEdgeCount(EdgeType edgeType) {
+		if(edgeType == EdgeType.UNDIRECTED) {
 			return getEdgeCount();
 		}
 		return 0;
@@ -713,6 +715,7 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * of edges whose source is this vertex), minus the number of
      * incident self-loops (to avoid double-counting).
      * </ul>
+     * 
      * <p>Equivalent to getIncidentEdges(vertex).size().
      * 
      * @param vertex the vertex whose degree is to be returned
@@ -730,8 +733,7 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * vertex by an edge e, where e is an outgoing edge of 
      * v and an incoming edge of vertex.
      * @param vertex    the vertex whose predecessors are to be returned
-     * @return  a Collection view of the predecessors of 
-     * vertex in this graph
+     * @return  a Collection view of the predecessors of vertex in this graph
      */
     public Collection<GraphNode> getPredecessors(GraphNode vertex) {
 		return getNeighbors(vertex);
@@ -744,8 +746,7 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * vertex by an edge e, where e is an incoming edge of 
      * v and an outgoing edge of vertex.
      * @param vertex    the vertex whose predecessors are to be returned
-     * @return  a Collection view of the successors of 
-     * vertex in this graph
+     * @return  a Collection view of the successors of vertex in this graph
      */
     public Collection<GraphNode> getSuccessors(GraphNode vertex) {
 		return getNeighbors(vertex);
@@ -780,10 +781,10 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * d is an outgoing edge.
      * directed_edge is guaranteed to be a directed edge if 
      * its EdgeType is DIRECTED. 
-     * @param directed_edge
+     * @param directedEdge The directed edge.
      * @return  the source of directed_edge if it is a directed edge in this graph, or null otherwise
      */
-    public GraphNode getSource(GraphEdge directed_edge) {
+    public GraphNode getSource(GraphEdge directedEdge) {
 		return null;
 	}
 
@@ -795,10 +796,10 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * d is an incoming edge.
      * directed_edge is guaranteed to be a directed edge if 
      * its EdgeType is DIRECTED. 
-     * @param directed_edge
+     * @param directedEdge The directed edge.
      * @return  the destination of directed_edge if it is a directed edge in this graph, or null otherwise
      */
-    public GraphNode getDest(GraphEdge directed_edge) {
+    public GraphNode getDest(GraphEdge directedEdge) {
 		return null;
 	}
 	
@@ -806,8 +807,7 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * Returns a Collection view of the incoming edges incident to vertex
      * in this graph.
      * @param vertex    the vertex whose incoming edges are to be returned
-     * @return  a Collection view of the incoming edges incident 
-     * to vertex in this graph
+     * @return  a Collection view of the incoming edges incident to vertex in this graph
      */
     public Collection<GraphEdge> getInEdges(GraphNode vertex) {
 		return getIncidentEdges(vertex);
@@ -821,8 +821,7 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * that provide more convenient access to the vertices.
      * 
      * @param edge the edge whose incident vertices are to be returned
-     * @return  the collection of vertices which are connected to edge, 
-     * or null if edge is not present
+     * @return  the collection of vertices which are connected to edge, or null if edge is not present
      */
     public Collection<GraphNode> getIncidentVertices(GraphEdge edge) {
 		
@@ -839,8 +838,7 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * Returns a Collection view of the outgoing edges incident to vertex
      * in this graph.
      * @param vertex    the vertex whose outgoing edges are to be returned
-     * @return  a Collection view of the outgoing edges incident 
-     * to vertex in this graph
+     * @return  a Collection view of the outgoing edges incident to vertex in this graph
      */
     public Collection<GraphEdge> getOutEdges(GraphNode vertex) {
 		return getIncidentEdges(vertex);
@@ -919,8 +917,9 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * (v1 and v2 are connected by an undirected edge u if 
      * u is incident to both v1 and v2.)
      * 
-     * @return  a collection containing all edges that connect v1 to v2, 
-     * or null if either vertex is not present
+     * @param v1 The first vertex of the set.
+     * @param v2 The second vertex of the set.
+     * @return  a collection containing all edges that connect v1 to v2, or null if either vertex is not present
      * @see Hypergraph#findEdge(Object, Object) 
      */
     public Collection<GraphEdge> findEdgeSet(GraphNode v1, GraphNode v2) {
@@ -960,7 +959,7 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
     /**
      * Adds edge e to this graph such that it connects 
      * vertex v1 to v2.
-     * Equivalent to addEdge(e, new Pair<GraphNode>(v1, v2)).
+     * Equivalent to addEdge(e, new Pair< GraphNode >(v1, v2)).
      * If this graph does not contain v1, v2, 
      * or both, implementations may choose to either silently add 
      * the vertices to the graph or throw an IllegalArgumentException.
@@ -986,7 +985,7 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 		return addEdge(e, v1, v2);
 	}
     
-    /**
+	/**
      * Adds edge to this graph.
      * Fails under the following circumstances:
      * <ul>
@@ -997,12 +996,10 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * and this graph does not accept parallel edges
      * </ul>
      * 
-     * @param edge
-     * @param vertices
+     * @param edge The edge to be added.
+     * @param vertices The vertices that should be connected to edge, if present.
      * @return true if the add is successful, and false otherwise
-     * @throws IllegalArgumentException if edge or vertices is null, 
-     * or if a different vertex set in this graph is already connected by edge, 
-     * or if vertices are not a legal vertex set for edge 
+     * @throws IllegalArgumentException if edge or vertices is null, or if a different vertex set in this graph is already connected by edge, or if vertices are not a legal vertex set for edge. 
      */
 	@SuppressWarnings("unchecked")
     public boolean addEdge(GraphEdge edge, Collection<? extends GraphNode> vertices) {
@@ -1014,8 +1011,8 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 		return addEdge(edge, vs[0], vs[1]);
 	}
 
-    /**
-     * Adds edge to this graph with type edge_type.
+	/**
+     * Adds edge to this graph with type edgeType.
      * Fails under the following circumstances:
      * <ul>
      * <li/>edge is already an element of the graph 
@@ -1023,24 +1020,23 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
      * <li/>vertices has the wrong number of vertices for the graph type
      * <li/>vertices are already connected by another edge in this graph,
      * and this graph does not accept parallel edges
-     * <li/>edge_type is not legal for this graph
+     * <li/>edgeType is not legal for this graph
      * </ul>
      * 
-     * @param edge
-     * @param vertices
+     * @param edge The edge to be added.
+     * @param vertices The vertices that should be connected to edge, if present.
+     * @param edgeType The edge type.
      * @return true if the add is successful, and false otherwise
-     * @throws IllegalArgumentException if edge or vertices is null, 
-     * or if a different vertex set in this graph is already connected by edge, 
-     * or if vertices are not a legal vertex set for edge 
+     * @throws IllegalArgumentException if edge or vertices is null, or if a different vertex set in this graph is already connected by edge, or if vertices are not a legal vertex set for edge 
      */
 	@SuppressWarnings("unchecked")
-    public boolean addEdge(GraphEdge edge, Collection<? extends GraphNode> vertices, EdgeType edge_type) {
+    public boolean addEdge(GraphEdge edge, Collection<? extends GraphNode> vertices, EdgeType edgeType) {
 		if(edge == null || vertices == null || vertices.size() != 2) {
 			return false;
 		}
 		
 		GraphNode[] vs = (GraphNode[])vertices.toArray();
-		return addEdge(edge, vs[0], vs[1], edge_type);
+		return addEdge(edge, vs[0], vs[1], edgeType);
 	}
 	
 	//********************************************************************************
@@ -1049,10 +1045,11 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
 	
 	/**
      * Returns a {@code Factory} that creates an instance of this graph type.
-     * @param <GraphNode> the vertex type for the graph factory
-     * @param <GraphEdge> the edge type for the graph factory
+     * @param <V> the vertex type for the graph factory
+     * @param <E> the edge type for the graph factory
+     * @return Returns a Factory that creates an instance of this graph type.
      */
-	public static <GraphNode,GraphEdge> Factory<UndirectedGraph<GraphNode,GraphEdge>> getFactory() { 
+	public static <V,E> Factory<UndirectedGraph<GraphNode,GraphEdge>> getFactory() { 
 		return new Factory<UndirectedGraph<GraphNode,GraphEdge>> () {
 			@SuppressWarnings("unchecked")
 			public UndirectedGraph<GraphNode,GraphEdge> create() {
@@ -1063,7 +1060,7 @@ class ThreeTenGraph implements Graph<GraphNode,GraphEdge>, UndirectedGraph<Graph
     
     /**
      * Returns the edge type of edge in this graph.
-     * @param edge
+     * @param edge The edge to be classified as undirected.
      * @return the EdgeType of edge, or null if edge has no defined type
      */
     public EdgeType getEdgeType(GraphEdge edge) {

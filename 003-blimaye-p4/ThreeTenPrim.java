@@ -1,5 +1,3 @@
-//TODO: Fill in anything that says YOUR_CODE_HERE
-
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 
@@ -13,6 +11,7 @@ import java.util.NoSuchElementException;
  *  Simulation of Prim's shortest path algorithm.
  *  
  *  @author Katherine (Raven) Russell
+ *  @author Brian Limaye
  */
 class ThreeTenPrim implements ThreeTenAlg {
 	/**
@@ -156,7 +155,15 @@ class ThreeTenPrim implements ThreeTenAlg {
 		//the node with ID 0 because that node could have been deleted
 		//using the graph editor.
 		
-		//YOUR_CODE_HERE
+		//Gets the available vertices from the last minimum.
+		Collection<GraphNode> availableVertices = (lastMin != null) ? graph.getNeighbors(lastMin.graphNode) : graph.getVertices();
+		for(GraphNode v: availableVertices) {
+
+			//Changes the minimum id node, if possible.
+			if((minIdNode == null) || (v.getId() < minIdNode.getId())) {
+				minIdNode = v;
+			}
+		}
 		
 		return minIdNode;
 	}
@@ -184,15 +191,13 @@ class ThreeTenPrim implements ThreeTenAlg {
 		graphNodesToAlgNodes = new HashMap<>();
 		
 		for(GraphNode v : graph.getVertices()) {
-			//NodeForAlg is a "wrapper class" around the
-			//graph node, it has fields like "cost" to
-			//track properties related to the algorithm
+			
 			NodeForAlg n = new NodeForAlg(v);
 			
-			//YOUR_CODE_HERE
-			//if the vertex is the minimum ID node, set
-			//it's cost (in it's wrapper class) appropriately
-			//for the cost of the starting node in Prim's algorithm
+			//Sets the smallest ID node's cost to 0.
+			if(v.equals(minIdNode)) {
+				n.cost = 0;
+			}
 			
 			graphNodesToAlgNodes.put(v,n);
 			queue.add(n);
@@ -290,11 +295,7 @@ class ThreeTenPrim implements ThreeTenAlg {
 	public boolean setupNextMin() {
 		if(queue.isEmpty()) return false;
 		
-		//YOUR_CODE_HERE
-		//replace the following line of code so that the current min
-		//is set to the next thing from the queue (removing it from
-		//the queue);
-		NodeForAlg currMin = null;
+		NodeForAlg currMin = queue.remove();
 		
 		//set color of next node and path to it (if not first node)
 		currMin.graphNode.setColor(COLOR_ACTIVE_NODE_1);
@@ -325,16 +326,13 @@ class ThreeTenPrim implements ThreeTenAlg {
 		
 		//highlight outgoing edges and neighbors in orange (to update)
 		Collection<GraphEdge> outEdges = graph.getOutEdges(lastMin.graphNode);
+		
 		for(GraphEdge e : outEdges) {
+
 			GraphNode n = graph.getOpposite(lastMin.graphNode, e);
 			NodeForAlg algNode = graphNodesToAlgNodes.get(n);
 			
-			//YOUR_CODE_HERE
-			//Replace the following line of code so the cost of the neighbors
-			//will be set appropriately for Prim's algorithm. (Note: you may want
-			//to read the code around this location to determine the value that
-			//goes here.)
-			int newCost = -1;
+			int newCost = e.getWeight();
 			
 			if(!algNode.done && newCost < algNode.cost) {
 				
